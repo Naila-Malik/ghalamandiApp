@@ -1,15 +1,11 @@
-import { StyleSheet } from 'react-native';
-import {
-  AppColors,
-  AppFonts,
-  normalized,
-} from './AppConstants';
+import {StyleSheet} from 'react-native';
+import {AppColors, AppFonts, normalized} from './AppConstants';
 export const AppHorizontalMargin = normalized(15);
 
 export const AppStyles = StyleSheet.create({
   MainStyle: {
     flex: 1,
-    backgroundColor: AppColors.white.white,
+    backgroundColor: AppColors.bgColor,
   },
   subContainerCommon: {
     flex: 1,
@@ -31,7 +27,7 @@ export const AppStyles = StyleSheet.create({
   },
   fullHeightAndWidth: {
     height: '100%',
-    width: '100%'
+    width: '100%',
   },
   shadowCommon: {
     shadowColor: '#000',

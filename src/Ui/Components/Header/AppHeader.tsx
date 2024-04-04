@@ -103,7 +103,7 @@ export default AppHeader;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: AppColors.white.white,
+    backgroundColor: AppColors.bgColor,
     ...AppStyles.horiCommon,
     marginHorizontal: normalized(15),
     paddingTop: 10,

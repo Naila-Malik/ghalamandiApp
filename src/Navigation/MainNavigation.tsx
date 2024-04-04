@@ -18,6 +18,7 @@ import {
 import CommonDataManager from '../Utils/CommonManager';
 import {navigationRef} from './RootNavigation';
 import HomePage from '../Ui/Sections/Home/HomePage';
+import SalePurchase from '../Ui/Sections/SalePurchase/SalePurchase';
 
 const MainStack = createStackNavigator();
 const AppStack = () => {
@@ -30,6 +31,10 @@ const AppStack = () => {
         gestureEnabled: false,
       }}>
       <MainStack.Screen name={Routes.home.homePage} component={HomePage} />
+      <MainStack.Screen
+        name={Routes.Products.SalePurchase}
+        component={SalePurchase}
+      />
     </MainStack.Navigator>
   );
 };
@@ -77,7 +82,8 @@ const AppContainer = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {userData ? <AppStack /> : <AuthStack />}
+      {/* {userData ? <AppStack /> : <AuthStack />} */}
+      <AppStack />
     </NavigationContainer>
   );
 };
