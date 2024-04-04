@@ -6,4 +6,7 @@ export const Routes = {
   home: {
     homePage: 'homePage',
   },
+  Products: {
+    SalePurchase: 'SalePurchase',
+  },
 };
