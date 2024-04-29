@@ -7,7 +7,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStore} from '../Redux/store/AppStore';
 import {NavigationContainer} from '@react-navigation/native';
 import {Routes} from '../Utils/Routes';
-import AuthStack from './AuthNavigation';
 import SafeArea from 'react-native-safe-area';
 import SplashScreen from 'react-native-splash-screen';
 import {
@@ -18,7 +17,8 @@ import {
 import CommonDataManager from '../Utils/CommonManager';
 import {navigationRef} from './RootNavigation';
 import HomePage from '../Ui/Sections/Home/HomePage';
-import SalePurchase from '../Ui/Sections/SalePurchase/SalePurchase';
+import HomePageNavigation from './HomePageNavigation';
+import AuthStack from './AuthNavigation';
 
 const MainStack = createStackNavigator();
 const AppStack = () => {
@@ -32,8 +32,8 @@ const AppStack = () => {
       }}>
       <MainStack.Screen name={Routes.home.homePage} component={HomePage} />
       <MainStack.Screen
-        name={Routes.Products.SalePurchase}
-        component={SalePurchase}
+        name={Routes.home.homePageNavigation}
+        component={HomePageNavigation}
       />
     </MainStack.Navigator>
   );
@@ -80,10 +80,11 @@ const AppContainer = () => {
     });
   }, [selector.AppReducer]);
 
+  console.log('user data--------------', userData);
   return (
     <NavigationContainer ref={navigationRef}>
-      {/* {userData ? <AppStack /> : <AuthStack />} */}
-      <AppStack />
+      {userData ? <AppStack /> : <AuthStack />}
+      {/* <AppStack /> */}
     </NavigationContainer>
   );
 };

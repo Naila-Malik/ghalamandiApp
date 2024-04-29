@@ -10,6 +10,7 @@ import {
   TextStyle,
 } from 'react-native';
 import {
+  AppColors,
   AppFonts,
   formFieldsHeight,
   normalized,
@@ -66,10 +67,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: normalized(10),
     borderRadius: 10,
+    // alignItems: 'center',
   },
   title: {
     fontSize: normalized(16),
     fontFamily: AppFonts.Synonyms.SemiBold,
+    fontWeight: '700',
   },
   icon: {
     height: 22,

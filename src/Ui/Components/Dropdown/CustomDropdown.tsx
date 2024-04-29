@@ -1,91 +1,63 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
-  ViewStyle,
 } from 'react-native';
 import {
   AppColors,
   AppImages,
   formFieldsHeight,
   normalized,
-  ScreenSize,
 } from '../../../Utils/AppConstants';
-import { AppStyles } from '../../../Utils/AppStyles';
+import {AppStyles} from '../../../Utils/AppStyles';
 
 interface Props {
-  title: string;
   value?: string;
   placeholder?: string;
-  containerStyle?: ViewStyle;
-  inputContainerStyle?: ViewStyle;
-  showIconWithTitle?: boolean;
-  disabled?: boolean;
-  isError?: boolean;
-  showError?: string | null;
-  showErrorIcon?: boolean;
-  onPress: () => void
+  data?: any;
+  selectValue?: any;
+  oneSelect?: any;
 }
 
 const CustomDropdown = (props: Props) => {
+  const [option, setOption] = useState(false);
+
+  const selectOption = () => {
+    setOption(!option);
+  };
+
+  const oneSelectItem = (val: any) => {
+    setOption(false);
+    props?.oneSelect(val);
+  };
   return (
-    <View style={[styles.mainContainer, props.containerStyle]}>
-      {props.value ? (
-        <View style={styles.empty}>
-          <Text style={styles.title}>{props.title}</Text>
-        </View>
-      ) : (
-        <View style={styles.empty} />
-      )}
-      <TouchableWithoutFeedback disabled={props.disabled ? true : false} onPress={() => props.onPress()}>
-        <View
-          style={[
-            styles.inputView,
-            props.inputContainerStyle,
-            {
-              backgroundColor:
-                props.value && !props.disabled && !props.isError
-                  ? AppColors.blue.lighterBlue
-                  : props.isError
-                    ? AppColors.red.red_dim
-                    : AppColors.grey.lighter,
-              marginTop: 6
-            },
-          ]}>
-          <View
-            style={[
-              AppStyles.horiCommon,
-              {
-                flex: 1,
-              },
-            ]}>
-            <Text
-              style={[
-                styles.input,
-                {
-                  color: !props.value ?
-                    AppColors.grey.gre_dimLvl2 : props.isError
-                      ? AppColors.red.warning
-                      : props.disabled
-                        ? AppColors.grey.greyLight
-                        : AppColors.black.black,
-                },
-              ]}
-            >
-              {props.value || props.placeholder}
-            </Text>
-          </View>
-          <Image
-            source={
-              AppImages.Common.arrowDown
-            }
-            style={styles.img}
-          />
+    <View style={{}}>
+      <TouchableWithoutFeedback onPress={selectOption}>
+        <View style={styles.inputView}>
+          <Text style={{color: AppColors.black.black}}>
+            {!!props.selectValue ? props.selectValue.name : 'Choose Option'}
+          </Text>
+          <Image source={AppImages.Common.DownArrow} style={styles.img} />
         </View>
       </TouchableWithoutFeedback>
+      {option && (
+        <View style={styles.openDropDown}>
+          {props?.data?.map((val: any, i: number) => {
+            return (
+              <TouchableWithoutFeedback
+                onPress={() => oneSelectItem(val)}
+                style={styles.optionName}>
+                <Text style={{color: AppColors.grey.greyLighterLvl2}}>
+                  {val?.name}
+                </Text>
+              </TouchableWithoutFeedback>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 };
@@ -93,34 +65,28 @@ const CustomDropdown = (props: Props) => {
 export default CustomDropdown;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    width: ScreenSize.width * 0.75,
-  },
-  title: {
-    color: AppColors.black.black,
-    fontSize: normalized(12),
-    ...AppStyles.textSemiBold,
-  },
   inputView: {
     ...AppStyles.horiCommon,
     height: formFieldsHeight,
-    borderRadius: 15,
+    borderRadius: 5,
     paddingHorizontal: normalized(10),
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  input: {
-    flex: 1,
-    fontSize: normalized(14),
-    ...AppStyles.textRegular,
-    height: '100%',
-  },
-  empty: {
-    height: normalized(15),
+    alignItems: 'center',
+    backgroundColor: AppColors.white.white,
   },
   img: {
-    tintColor: AppColors.grey.grey,
-    alignSelf: 'center'
-  }
+    tintColor: AppColors.black.black,
+    alignSelf: 'center',
+  },
+  openDropDown: {
+    backgroundColor: AppColors.white.white,
+    padding: 10,
+    marginVertical: 5,
+  },
+  optionName: {
+    margin: 5,
+    padding: 10,
+    borderRadius: 4,
+  },
 });
