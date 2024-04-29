@@ -1,6 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {Dimensions, Platform, PixelRatio, StatusBar} from 'react-native';
 import moment from 'moment';
+import {Routes} from './Routes';
 export const platformVersion = Platform.Version;
 export type ScreenProps = StackScreenProps<any, any>;
 export const ScreenSize = Dimensions.get('screen');
@@ -18,6 +19,8 @@ export const formFieldsHeight =
 export const isSmallDevice = ScreenSize.height < 700 ? true : false;
 export const maxDescriptionLength = 60;
 export const maxImageSizeInBytes = 10 * 1024 * 1024; // 10MB
+export const webClientIdSingin =
+  '525211041830-qbdjtvdr0n25igc3vjim3lnf6tkdptcv.apps.googleusercontent.com';
 
 export const isAndroid = Platform.OS == 'android';
 
@@ -25,12 +28,17 @@ export const AppImages = {
   Auth: {
     EngFlag: require('../Ui/assets/images/Auth/EngFlag.png'),
     pkFlag: require('../Ui/assets/images/Auth/pkFlag.png'),
+    Gicon: require('../Ui/assets/images/Auth/G.png'),
   },
   Common: {
     BackIcon: require('../Ui/assets/images/Common/backIcon.png'),
     tick: require('../Ui/assets/images/Common/tick.png'),
     LogoImage: require('../Ui/assets/images/Common/logo.png'),
     bannerImage: require('../Ui/assets/images/Common/bannerImage.png'),
+    wheatGrain: require('../Ui/assets/images/Common/wheat-grains.png'),
+    DownArrow: require('../Ui/assets/images/Common/DownArrow.png'),
+    rightArrow: require('../Ui/assets/images/Common/rightArrow.png'),
+    placeholderImg: require('../Ui/assets/images/Common/placeholder.jpg'),
   },
   Home: {
     windIcon: require('../Ui/assets/images/Home/wind.png'),
@@ -60,6 +68,32 @@ export const AppImages = {
     sesamum: require('../Ui/assets/images/ProductsCat/sesamum.png'),
     sorghum: require('../Ui/assets/images/ProductsCat/Sorghum.png'),
     wheat: require('../Ui/assets/images/ProductsCat/wheat.png'),
+    location: require('../Ui/assets/images/ProductsCat/location.png'),
+  },
+  BottomTab: {
+    PlusIcon: require('../Ui/assets/images/BottomTab/Plus.png'),
+    CartIcon: require('../Ui/assets/images/BottomTab/cart.png'),
+    History: require('../Ui/assets/images/BottomTab/History.png'),
+  },
+  Crop: {
+    potato: require('../Ui/assets/images/Crops/Potato.png'),
+    corn: require('../Ui/assets/images/Crops/corn.png'),
+    paddy: require('../Ui/assets/images/Crops/paddy.png'),
+    mustard: require('../Ui/assets/images/Crops/Mustard.png'),
+    cotton: require('../Ui/assets/images/Crops/cotton.png'),
+    sesamum: require('../Ui/assets/images/Crops/sesamum.png'),
+    sorghum: require('../Ui/assets/images/Crops/sorghum.png'),
+    wheat: require('../Ui/assets/images/Crops/wheat.png'),
+  },
+  Settings: {
+    languageIcon: require('../Ui/assets/images/Settings/language.png'),
+    AddressIcon: require('../Ui/assets/images/Settings/Address.png'),
+    CityIcon: require('../Ui/assets/images/Settings/city.png'),
+    LogoutIcon: require('../Ui/assets/images/Settings/Logout.png'),
+    PersonIcon: require('../Ui/assets/images/Settings/person.png'),
+    StaticsIcon: require('../Ui/assets/images/Settings/statics.png'),
+    StatusIcon: require('../Ui/assets/images/Settings/status.png'),
+    notifiIcon: require('../Ui/assets/images/Settings/notifi.png'),
   },
 };
 
@@ -98,16 +132,10 @@ export const AppColors = {
     deepBlack: '#000000',
   },
   grey: {
-    grey: '#6B7280',
-    greyLight: '#E5E7EB',
-    lighter: '#F1F5F9',
-    lighterLvl2: '#94A3B8',
-    borderGrey: '#E2E8F0',
-    grey_dim: '#F6F7FB',
-    gre_dimLvl2: '#64748B',
-    greyLightest: '#F8FAFC',
-    otpGrey: '#4B5563',
-    dotGrey: '#9CA3AF',
+    grey: '#C1C1C1',
+    greyLighter: '#F2F2F2',
+    greyLighterLvl2: '#A19F9F',
+    greyDark: '#706D6D',
   },
   green: {
     dark: '#419344',
@@ -230,50 +258,180 @@ export const productsCate = [
     id: 1,
     title: 'Back',
     icon: AppImages.Common.BackIcon,
+    nav: Routes.home.homePage,
+    type: '',
   },
   {
     id: 2,
     title: 'All',
     icon: AppImages.ProductCate.allIcon,
+    type: 'All',
   },
   {
     id: 3,
     title: 'Potato',
     icon: AppImages.ProductCate.potato,
+    type: 'Potato',
   },
   {
     id: 4,
     title: 'Maize',
     icon: AppImages.ProductCate.maiz,
+    type: 'Maize',
   },
   {
     id: 5,
     title: 'Paddy',
     icon: AppImages.ProductCate.paddy,
+    type: 'Paddy',
   },
   {
     id: 6,
     title: 'Mustard',
     icon: AppImages.ProductCate.mustard,
+    type: 'Mustard',
   },
   {
     id: 7,
     title: 'Cotton',
     icon: AppImages.ProductCate.cotton,
+    type: 'Cotton',
   },
   {
     id: 8,
     title: 'Sesamum',
     icon: AppImages.ProductCate.sesamum,
+    type: 'Sesamum',
   },
   {
     id: 9,
     title: 'Sorghum',
     icon: AppImages.ProductCate.sorghum,
+    type: 'Sorghum',
   },
   {
     id: 10,
     title: 'Wheat',
     icon: AppImages.ProductCate.wheat,
+    type: 'Wheat',
+  },
+];
+
+export const AllProductsList = [
+  {
+    id: 1,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Common.wheatGrain,
+  },
+  {
+    id: 2,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Common.wheatGrain,
+  },
+  {
+    id: 3,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Common.wheatGrain,
+  },
+  {
+    id: 4,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Common.wheatGrain,
+  },
+];
+export const PotatosList = [
+  {
+    id: 1,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Crop.potato,
+  },
+  {
+    id: 2,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Crop.potato,
+  },
+  {
+    id: 3,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Crop.potato,
+  },
+  {
+    id: 4,
+    name: 'Wheat',
+    distance: '18.5 km',
+    category: 'General',
+    Qty: '10000 kg',
+    price: 'RS 40000',
+    img: AppImages.Crop.potato,
+  },
+];
+export const Crops = [
+  {
+    id: 1,
+    title: 'Potato',
+    icon: AppImages.Crop.potato,
+  },
+  {
+    id: 2,
+    title: 'Maize',
+    icon: AppImages.Crop.corn,
+  },
+  {
+    id: 3,
+    title: 'Paddy',
+    icon: AppImages.Crop.paddy,
+  },
+  {
+    id: 4,
+    title: 'Mustard',
+    icon: AppImages.Crop.mustard,
+  },
+  {
+    id: 5,
+    title: 'Cotton',
+    icon: AppImages.Crop.cotton,
+  },
+  {
+    id: 6,
+    title: 'Sesamum',
+    icon: AppImages.Crop.sesamum,
+  },
+  {
+    id: 7,
+    title: 'Sorghum',
+    icon: AppImages.Crop.sesamum,
+  },
+  {
+    id: 8,
+    title: 'Wheat',
+    icon: AppImages.Crop.wheat,
   },
 ];

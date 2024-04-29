@@ -1,23 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { AppStrings } from '../../Utils/Strings';
-import { IReduxState } from '../../Utils/AppTypes';
+import {createSlice} from '@reduxjs/toolkit';
+import {AppStrings} from '../../Utils/Strings';
+import {IReduxState} from '../../Utils/AppTypes';
 
 const initialState: IReduxState = {
   isLoaderStart: false,
   isNetConnected: true,
-  safeArea: { top: 0, bottom: 0 },
+  safeArea: {top: 0, bottom: 0},
   userData: null,
-  drawerValue: false,
-  drawerIndex: 0,
+  mainMenuId: 0,
   isNotchDevice: false,
-  fetchUpdatedUser: new Date().toISOString(),
-  moveToScreen: null,
-  moveToParams: null,
-  alertObj: null,
-  showToast: '',
-  notificationObj: null,
-  childList: [],
-  selectedChild: null,
 };
 
 export const AppSlice = createSlice({
@@ -33,11 +24,8 @@ export const AppSlice = createSlice({
     setUserData: (state, action) => {
       state.userData = action.payload;
     },
-    toggleDrawer: (state, action) => {
-      state.drawerValue = action.payload;
-    },
-    setDrawerIndex: (state, action) => {
-      state.drawerIndex = action.payload;
+    setMainMenuId: (state, action) => {
+      state.mainMenuId = action.payload;
     },
     setIsNotchDevice: (state, action) => {
       state.isNotchDevice = action.payload;
@@ -45,31 +33,6 @@ export const AppSlice = createSlice({
     setNetConnected: (state, action) => {
       state.isNetConnected = action.payload;
     },
-    setFetchUpdatedUser: (state, action) => {
-      state.fetchUpdatedUser = action.payload;
-    },
-    setMoveToScreen: (state, action) => {
-      state.moveToScreen = action.payload;
-    },
-    setMoveToParams: (state, action) => {
-      state.moveToParams = action.payload;
-    },
-    setAlertObj: (state, action) => {
-      state.alertObj = action.payload;
-    },
-    setShowToast: (state, action) => {
-      state.showToast = action.payload;
-    },
-    setNotificationObj: (state, action) => {
-      state.notificationObj = action.payload;
-    },
-    setChildList: (state, action) => {
-      state.childList = action.payload;
-    },
-    setSelectedChild: (state, action) => {
-      state.selectedChild = action.payload;
-    },
-
   },
 });
 
@@ -77,18 +40,9 @@ export const {
   setLoader,
   setSafeArea,
   setUserData,
-  toggleDrawer,
-  setDrawerIndex,
+  setMainMenuId,
   setIsNotchDevice,
   setNetConnected,
-  setFetchUpdatedUser,
-  setMoveToScreen,
-  setMoveToParams,
-  setAlertObj,
-  setShowToast,
-  setNotificationObj,
-  setChildList,
-  setSelectedChild,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

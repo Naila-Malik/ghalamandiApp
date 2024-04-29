@@ -12,6 +12,7 @@ import LogoHeader from '../../Components/Header/LogoHeader';
 import {
   AppColors,
   AppImages,
+  ScreenProps,
   homeMenuArray,
   hv,
   normalized,
@@ -19,6 +20,9 @@ import {
 } from '../../../Utils/AppConstants';
 import Box from '../../Components/Box/Box';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useDispatch} from 'react-redux';
+import {setMainMenuId} from '../../../Redux/reducers/AppReducer';
+import {Routes} from '../../../Utils/Routes';
 
 const weather = {
   degree: '13.0',
@@ -28,7 +32,8 @@ const weather = {
   cloud: '80%',
 };
 
-const HomePage = () => {
+const HomePage = (props: ScreenProps) => {
+  const dispatch = useDispatch();
   return (
     <View style={AppStyles.MainStyle}>
       <LogoHeader
@@ -50,6 +55,7 @@ const HomePage = () => {
             data={weatherArray}
             keyExtractor={item => `@${item.id}`}
             horizontal
+            showsHorizontalScrollIndicator={false}
             renderItem={({item}: any) => {
               return (
                 <Box
@@ -72,7 +78,11 @@ const HomePage = () => {
           columnWrapperStyle={styles.contentContainer}
           renderItem={({item}: any) => {
             return (
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(setMainMenuId(item.id));
+                  props.navigation.navigate(Routes.home.homePageNavigation);
+                }}>
                 <Box
                   label={item.label}
                   img={item.icon}

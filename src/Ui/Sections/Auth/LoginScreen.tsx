@@ -7,9 +7,14 @@ import {
   ScreenProps,
   hv,
   normalized,
+  webClientIdSingin,
 } from '../../../Utils/AppConstants';
 import RoundButton from '../../Components/Button/RoundButton';
 import {Routes} from '../../../Utils/Routes';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 const LoginScreen = (props: ScreenProps) => {
   return (
@@ -27,7 +32,37 @@ const LoginScreen = (props: ScreenProps) => {
       </Text>
       <RoundButton
         title="Google"
-        onPress={() => props.navigation.navigate(Routes.home.homePage)}
+        onPress={() =>
+          //  props.navigation.navigate(Routes.home.homePage)}
+          {
+            GoogleSignin.configure({
+              webClientId: webClientIdSingin,
+              // iosClientId: 'ADD_YOUR_iOS_CLIENT_ID_HERE',
+              offlineAccess: true,
+            });
+            GoogleSignin.hasPlayServices()
+              .then(hasPlayService => {
+                if (hasPlayService) {
+                  GoogleSignin.signIn()
+                    .then(userInfo => {
+                      console.log(JSON.stringify(userInfo));
+                    })
+                    .catch(e => {
+                      console.log('ERROR IS: ' + JSON.stringify(e));
+                    });
+                }
+              })
+              .catch(e => {
+                console.log('ERROR IS: ' + JSON.stringify(e));
+              });
+          }
+        }
+        icon={AppImages.Auth.Gicon}
+        iconStyles={{
+          width: normalized(20),
+          height: hv(20),
+          resizeMode: 'contain',
+        }}
         containerStyle={{
           backgroundColor: AppColors.red.dark,
           marginTop: hv(20),

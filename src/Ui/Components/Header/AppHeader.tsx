@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
     width: normalized(40),
     height: normalized(40),
     ...AppStyles.centeredCommon,
-    backgroundColor: AppColors.white.white,
     borderRadius: normalized(12),
   },
   leftImg: {
