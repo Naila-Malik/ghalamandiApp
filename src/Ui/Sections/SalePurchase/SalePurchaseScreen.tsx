@@ -1,12 +1,13 @@
 import {
   FlatList,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   AllProductsList,
   AppColors,
@@ -15,104 +16,250 @@ import {
   ScreenProps,
   hv,
   normalized,
-  productsCate,
+  // productsCate,
 } from '../../../Utils/AppConstants';
 import {AppStyles} from '../../../Utils/AppStyles';
 import BottomTab from '../../Components/CustomBottomTab/BottomTab';
 import {Routes} from '../../../Utils/Routes';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+  getAllCrops,
+  getAllPro,
+  getProByCrop,
+} from '../../../Network/Services/HomeApis';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import {BASE_URL} from '../../../Network/Urls';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const SalePurchaseScreen = (props: ScreenProps) => {
   const [selectedItem, setSelectedItem] = useState('salePurchase');
-  const [selectedCate, setSelectedCate] = useState('All');
+  const [selectedCate, setSelectedCate] = useState(0);
+  const [Arr, setArr] = useState([]);
+  const [productsCate, setproductsCate] = useState([]);
+  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const dispatch = useDispatch();
 
-  const Arr =
-    selectedCate === 'All'
-      ? AllProductsList
-      : selectedCate === 'Potato'
-      ? PotatosList
-      : [];
+  const fetchCropApi = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getAllCrops(selector.isNetConnected);
+      response?.success ? setproductsCate(response?.data) : [];
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  const fetchAllProApi = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getAllPro(selector.isNetConnected);
+      // console.log('response--------------', response.data);
+      console.log('response--------------', selector?.isLoaderStart);
+      setArr(response.data);
+      {
+        selector?.isLoaderStart ? (
+          <AppLoader visisble={selector?.isLoaderStart} />
+        ) : null;
+      }
+      // response?.success ? setproductsCate(response?.data) : [];
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  useEffect(() => {
+    fetchCropApi();
+    {
+      selectedCate > 0 ? fetchProBYCrop() : fetchAllProApi();
+    }
+  }, [selectedCate]);
+
+  const fetchProBYCrop = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getProByCrop(
+        selector.isNetConnected,
+        selectedCate,
+      );
+      // console.log('response--------------', response.data);
+      console.log('response--------------', selector?.isLoaderStart);
+      {
+        selector?.isLoaderStart ? (
+          <AppLoader visisble={selector?.isLoaderStart} />
+        ) : null;
+      }
+      setArr(response.data);
+      // response?.success ? setproductsCate(response?.data) : [];
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
 
   return (
-    <View style={AppStyles.MainStyle}>
-      <View style={styles.container}>
-        <FlatList
-          data={productsCate}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={item => `@${item.id}`}
-          renderItem={({item}: any) => {
-            return (
-              <View>
+    <FlatList
+      style={AppStyles.MainStyle}
+      data={[0]}
+      showsVerticalScrollIndicator={false}
+      renderItem={({item}: any) => {
+        return (
+          <>
+            <View style={styles.HeadCon}>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.goBack();
+                }}>
+                <View style={styles.backBtn}>
+                  <Image
+                    source={AppImages.Common.BackIcon}
+                    style={styles.img}
+                  />
+                </View>
+              </TouchableOpacity>
+              <View style={{marginTop: hv(10)}}>
                 <TouchableOpacity
                   onPress={() => {
-                    // props.navigation.navigate(item.nav),
-                    setSelectedCate(item.type);
+                    setSelectedCate(0);
                   }}>
-                  <View style={styles.menuBox}>
-                    <Image source={item?.icon} style={styles.img} />
+                  <View style={styles.backBtn}>
+                    <Image
+                      source={AppImages.ProductCate.allIcon}
+                      style={styles.img}
+                    />
                   </View>
                 </TouchableOpacity>
-                <Text style={styles.txt}>{item?.title}</Text>
-              </View>
-            );
-          }}
-        />
-      </View>
-      <View style={styles.body}>
-        <FlatList
-          data={Arr}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => `@${item.id}`}
-          contentContainerStyle={styles.cardContainer}
-          renderItem={({item}: any) => {
-            return (
-              <TouchableOpacity style={styles.card}>
-                <View style={styles.bgImagCard}>
-                  <Image source={item?.img} style={styles.bgImg} />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.txt}>{item.name}</Text>
-                  <View style={{flexDirection: 'row'}}>
-                    <Image
-                      source={AppImages.ProductCate.location}
-                      style={styles.icon}
-                    />
-                    <Text>{item.distance}</Text>
-                  </View>
-                </View>
-                <Text style={[styles.txt2, {color: AppColors.green.dark}]}>
-                  {item.category}
+                <Text
+                  style={[
+                    styles.txt,
+                    {
+                      // marginH: normalized(5),
+                      // alignSelf: 'center',
+                      marginLeft: normalized(10),
+                    },
+                  ]}>
+                  All
                 </Text>
-                <Text style={styles.txt2}>Qty {item.Qty}</Text>
-                <Text style={styles.txt2}>{item.price}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-      <BottomTab
-        leftIcon
-        onLeftIconPress={() => {
-          setSelectedItem('salePurchase'),
-            props.navigation.navigate(Routes.Products.SalePurchase);
-        }}
-        rightIcon
-        onRightIconPress={() => {
-          setSelectedItem('deals'),
-            props.navigation.navigate(Routes.Products.dealsHistory);
-        }}
-        middleIcon
-        onMiddleIconPress={() => {
-          setSelectedItem('addBid'),
-            props.navigation.navigate(Routes.Products.addBid);
-        }}
-      />
-    </View>
+              </View>
+              <View style={styles.container}>
+                <FlatList
+                  data={productsCate}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => `@${item.id}`}
+                  renderItem={({item}: any) => {
+                    // console.log('item--------------', item);
+                    return (
+                      <View>
+                        <TouchableOpacity
+                          onPress={() => {
+                            // props.navigation.navigate(item.nav),
+                            setSelectedCate(item?.id);
+                          }}>
+                          <View style={styles.menuBox}>
+                            <Image
+                              // source={{uri: item?.avatar}}
+                              source={{
+                                uri: item?.avatar
+                                  ? item?.avatar
+                                  : AppImages.Common.placeholderImg,
+                              }}
+                              style={styles.img}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                        <Text
+                          style={[
+                            styles.txt,
+                            {
+                              marginHorizontal: normalized(5),
+                            },
+                          ]}>
+                          {item?.name}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            </View>
+            <View style={styles.body}>
+              {Arr?.length == 0 && !selector?.isLoaderStart ? (
+                <View style={styles.emptyCont}>
+                  <Text style={styles.emptyTxt}>No Product found!</Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={Arr}
+                  numColumns={2}
+                  showsVerticalScrollIndicator={false}
+                  keyExtractor={item => `@${item.id}`}
+                  contentContainerStyle={styles.cardContainer}
+                  renderItem={({item}: any) => {
+                    return (
+                      <TouchableOpacity
+                        style={styles.card}
+                        onPress={() => {
+                          props?.navigation.navigate(
+                            Routes.Products.productDetail,
+                            {
+                              item: item,
+                            },
+                          );
+                        }}>
+                        <View style={styles.bgImagCard}>
+                          <Image
+                            // source={{uri: `${BASE_URL}` + item?.images[0]?.image}}
+                            source={
+                              (item?.images ?? []).length > 0
+                                ? item?.images
+                                : AppImages.Common.placeholderImg
+                            }
+                            style={styles.bgImg}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}>
+                          <Text style={styles.txt}>{item.crop_id}</Text>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              width: normalized(100),
+                            }}>
+                            <Image
+                              source={AppImages.ProductCate.location}
+                              style={styles.icon}
+                            />
+                            <Text numberOfLines={1}>{item.stock_location}</Text>
+                          </View>
+                        </View>
+                        <Text
+                          style={[styles.txt2, {color: AppColors.green.dark}]}>
+                          {item?.crop_type}
+                        </Text>
+                        <Text style={styles.txt2}>
+                          Qty {item?.total_qty} {item?.weight_unit}
+                        </Text>
+                        <Text style={styles.txt2}>R.s {item.price}</Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                  // ListFooterComponent={
+                  //   <View style={{height: hv(10), backgroundColor: 'yellow'}} />
+                  // }
+                />
+              )}
+            </View>
+          </>
+        );
+      }}
+    />
   );
 };
 
@@ -122,9 +269,13 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: AppColors.bgColor,
     ...AppStyles.horiCommon,
-    marginHorizontal: normalized(15),
-    paddingTop: 10,
+    marginHorizontal: normalized(10),
+    // paddingTop: 10,
     height: 90,
+  },
+  HeadCon: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   menuBox: {
     width: normalized(45),
@@ -134,16 +285,22 @@ const styles = StyleSheet.create({
     borderRadius: normalized(25),
     marginHorizontal: normalized(7),
   },
+  backBtn: {
+    width: normalized(45),
+    height: normalized(45),
+    ...AppStyles.centeredCommon,
+    backgroundColor: AppColors.white.white,
+    borderRadius: normalized(25),
+    marginLeft: normalized(15),
+    marginBottom: hv(10),
+  },
   txt: {
-    // ...AppStyles.textMedium,
     fontSize: 12,
     color: AppColors.black.black,
-    marginTop: hv(10),
     textAlign: 'center',
     fontWeight: 'bold',
   },
   txt2: {
-    // ...AppStyles.textMedium,
     fontSize: 12,
     color: AppColors.black.black,
     marginTop: hv(10),
@@ -180,11 +337,21 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: normalized(100),
     height: hv(100),
+    marginVertical: hv(10),
   },
   bgImagCard: {
-    height: hv(120),
     alignItems: 'center',
     justifyContent: 'center',
     resizeMode: 'contain',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
+  },
+  emptyTxt: {
+    fontSize: normalized(14),
+    fontWeight: '400',
+    color: AppColors.black.black,
   },
 });

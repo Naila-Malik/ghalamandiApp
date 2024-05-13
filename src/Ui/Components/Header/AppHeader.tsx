@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.bgColor,
     ...AppStyles.horiCommon,
     marginHorizontal: normalized(15),
-    paddingTop: 10,
+    // paddingTop: 10,
     height: 60,
   },
   leftImgBox: {

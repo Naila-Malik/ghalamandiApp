@@ -7,11 +7,15 @@ export const Routes = {
     homePage: 'homePage',
     homePageNavigation: 'homePageNavigation',
   },
+  bottomTab: {
+    bottomTab: 'bottomTab',
+  },
   Products: {
     SalePurchase: 'SalePurchase',
     addBid: 'addBid',
     dealsHistory: 'dealsHistory',
     newCrop: 'newCrop',
+    productDetail: 'productDetail',
   },
   MandiRates: {
     MandiRatesHome: 'MandiRatesHome',

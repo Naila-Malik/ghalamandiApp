@@ -1,44 +1,36 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { AppColors } from '../../../Utils/AppConstants';
-
-const AppLoader = () => {
+import {View, ActivityIndicator} from 'react-native';
+import {AppColors} from '../../../Utils/AppConstants';
+const AppLoader = (props: any) => {
   return (
-    <View style={styles.main}>
-      <StatusBar
-        barStyle={'light-content'}
-        backgroundColor={AppColors.transparentColor}
-      />
-      <SafeAreaView />
-      <View style={styles.loaderBox}>
-        <ActivityIndicator color={AppColors.blue.mainBlue} size="large" />
+    <View
+      style={{
+        backgroundColor: 'rgba(0,0,0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        elevation: 3,
+        zIndex: 100,
+      }}>
+      <View
+        style={{
+          backgroundColor: 'white',
+          width: 80,
+          height: 80,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 10,
+        }}>
+        {props.visisble ? (
+          <ActivityIndicator size="large" color={AppColors.green.dark} />
+        ) : null}
       </View>
     </View>
   );
 };
 
 export default AppLoader;
-
-const styles = StyleSheet.create({
-  main: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: AppColors.transparentColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  loaderBox: {
-    backgroundColor: AppColors.white.white,
-    borderRadius: 20,
-    height: 100,
-    width: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

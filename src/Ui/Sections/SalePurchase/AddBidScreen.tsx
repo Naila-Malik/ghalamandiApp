@@ -7,59 +7,79 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import {
   AppColors,
-  Crops,
+  // Crops,
   ScreenProps,
   hv,
   normalized,
 } from '../../../Utils/AppConstants';
 import {Routes} from '../../../Utils/Routes';
 import BottomTab from '../../Components/CustomBottomTab/BottomTab';
+import {getAllCrops} from '../../../Network/Services/HomeApis';
+import {setIsAlertShow, setLoader} from '../../../Redux/reducers/AppReducer';
+import {useDispatch, useSelector} from 'react-redux';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const AddBidScreen = (props: ScreenProps) => {
+  const dispatch = useDispatch();
+  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const [productsCate, setproductsCate] = useState([]);
+
+  const fetchCropApi = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getAllCrops(selector.isNetConnected);
+      response?.success ? setproductsCate(response?.data) : [];
+      {
+        selector?.isLoaderStart ? <AppLoader /> : null;
+      }
+      // dispatch(setIsAlertShow({value: true, message: response?.message}));
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchCropApi();
+  }, []);
+  // console.log('productsCate---------------', productsCate);
   return (
     <View style={AppStyles.MainStyle}>
       <Text style={styles.txt2}>Select Crop</Text>
-      <FlatList
-        data={Crops}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => `@${item.id}`}
-        contentContainerStyle={styles.cardContainer}
-        renderItem={({item}: any) => {
-          return (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => {
-                props.navigation.navigate(Routes.Products.newCrop, {
-                  name: item?.title,
-                  navigation: props.navigation,
-                });
-              }}>
-              <Image source={item?.icon} style={styles.bgImg} />
+      {productsCate?.length == 0 && !selector?.isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <Text style={styles.emptyTxt}>No Category found!</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={productsCate}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => `@${item.id}`}
+          contentContainerStyle={styles.cardContainer}
+          renderItem={({item}: any) => {
+            return (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => {
+                  props.navigation.navigate(Routes.Products.newCrop, {
+                    name: item?.name,
+                    id: item?.id,
+                  });
+                }}>
+                <Image source={item?.avatar} style={styles.bgImg} />
 
-              <Text style={styles.txt}>{item.title}</Text>
-            </TouchableOpacity>
-          );
-        }}
-      />
-      <BottomTab
-        leftIcon
-        onLeftIconPress={() =>
-          props.navigation.navigate(Routes.Products.SalePurchase)
-        }
-        rightIcon
-        onRightIconPress={() =>
-          props.navigation.navigate(Routes.Products.dealsHistory)
-        }
-        middleIcon
-        onMiddleIconPress={() =>
-          props.navigation.navigate(Routes.Products.addBid)
-        }
-      />
+                <Text style={styles.txt}>{item?.name}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -96,5 +116,15 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     justifyContent: 'space-between',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
+  },
+  emptyTxt: {
+    fontSize: normalized(14),
+    fontWeight: '400',
+    color: AppColors.black.black,
   },
 });

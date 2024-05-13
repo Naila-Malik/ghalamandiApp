@@ -44,11 +44,8 @@ const AppContainer = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // getUserDetails();
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 500);
-  }, []);
+    getUserDetails();
+  }, [userData]);
 
   const getUserDetails = async () => {
     try {
@@ -64,27 +61,26 @@ const AppContainer = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    SafeArea.getSafeAreaInsetsForRootView().then(result => {
-      if (safeArea.top != result.safeAreaInsets.top) {
-        dispatch(
-          setSafeArea({
-            top: result.safeAreaInsets.top,
-            bottom: result.safeAreaInsets.bottom,
-          }),
-        );
-        if (result.safeAreaInsets.top > 30) {
-          dispatch(setIsNotchDevice(true));
-        }
-      }
-    });
-  }, [selector.AppReducer]);
+  // useLayoutEffect(() => {
+  //   SafeArea.getSafeAreaInsetsForRootView().then(result => {
+  //     if (safeArea.top != result.safeAreaInsets.top) {
+  //       dispatch(
+  //         setSafeArea({
+  //           top: result.safeAreaInsets.top,
+  //           bottom: result.safeAreaInsets.bottom,
+  //         }),
+  //       );
+  //       if (result.safeAreaInsets.top > 30) {
+  //         dispatch(setIsNotchDevice(true));
+  //       }
+  //     }
+  //   });
+  // }, [selector.AppReducer]);
 
-  console.log('user data--------------', userData);
+  // console.log('user data--------------', userData);
   return (
     <NavigationContainer ref={navigationRef}>
       {userData ? <AppStack /> : <AuthStack />}
-      {/* <AppStack /> */}
     </NavigationContainer>
   );
 };

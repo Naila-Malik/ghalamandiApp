@@ -6,7 +6,6 @@ import {
 import {Routes} from '../Utils/Routes';
 import SelectLanguage from '../Ui/Sections/Auth/SelectLanguage';
 import LoginScreen from '../Ui/Sections/Auth/LoginScreen';
-import HomePage from '../Ui/Sections/Home/HomePage';
 
 const Stack = createStackNavigator();
 const AuthStack = () => {

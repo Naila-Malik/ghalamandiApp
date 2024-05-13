@@ -1,39 +1,32 @@
 import axios from 'axios';
 import CommonDataManager from '../Utils/CommonManager';
-import { AppStrings } from '../Utils/Strings';
-import { AxiosParamsInterface, axiosMethodTypes } from '../Utils/AppTypes';
-import { ewcApiKey, ewcAppId } from './Urls';
-import NetInfo from '@react-native-community/netinfo'
+import {AppStrings} from '../Utils/Strings';
 
-const Api = async (apiParamsObj: AxiosParamsInterface) => {
-  const {
-    url,
-    method,
-    requiresToken = true,
-    params = {},
-    isFormData = false,
-    requestTimeoutDuration = 30000,
-    saveToken = false,
-  } = apiParamsObj;
-
-
-  let headers: any = {
-    [`EWC-API-KEY`]: ewcApiKey,
-    [`EWC-APP-ID`]: ewcAppId
-  }
-  const { CancelToken } = axios;
+const Api = async (
+  internetValue = true,
+  url: string,
+  method: string,
+  token = false,
+  body = {},
+  isFormData = false,
+) => {
+  let headers: any;
+  const {CancelToken} = axios;
   const source = CancelToken.source();
   var apiTimeout = setTimeout(() => {
     source.cancel(AppStrings.Network.requestTimeoutError);
-  }, requestTimeoutDuration);
+  }, 30000);
 
   if (isFormData) {
-    headers['Content-Type'] = 'multipart/form-data';
+    headers = {
+      'Content-Type': 'multipart/form-data',
+    };
   } else {
-    headers['Content-Type'] = 'application/json';
+    headers = {
+      'Content-Type': 'application/json',
+    };
   }
 
-  let internetValue = await checkInternet()
   if (!internetValue) {
     return {
       message: AppStrings.Network.internetError,
@@ -42,10 +35,10 @@ const Api = async (apiParamsObj: AxiosParamsInterface) => {
     };
   }
 
-  if (requiresToken) {
+  if (token) {
     const userToken =
       await CommonDataManager.getSharedInstance().getUserToken();
-    headers.Authorization = `Bearer ${userToken}`;
+    headers['Authorization'] = userToken;
   }
 
   const structure: any = {
@@ -55,40 +48,46 @@ const Api = async (apiParamsObj: AxiosParamsInterface) => {
     cancelToken: source.token,
   };
 
-  if (method === axiosMethodTypes.get) {
-    structure.params = params;
+  if (method === 'GET') {
+    structure.params = body;
   } else {
-    structure.data = params;
+    structure['data'] = body;
   }
+
   return axios(structure)
-    .then(async (resp: any) => {
-      if (saveToken && resp?.headers[`set-cookie`][0]) {
-        await CommonDataManager.getSharedInstance().saveUserToken(resp?.headers[`set-cookie`][0])
-      }
-      return {
-        message: '',
-        data: resp.data,
-        success: true,
-        statusCode: 200
+    .then(resp => {
+      clearTimeout(apiTimeout);
+      if (resp?.data?.code == 200) {
+        return {
+          message: resp?.data?.message,
+          data: resp?.data?.data,
+          success: true,
+        };
+      } else {
+        return resp.data;
       }
     })
     .catch(async error => {
-      const errorCode = error?.response?.status
-      return {
-        message: errorCode == 500 || errorCode == 404 ? AppStrings.Network.oopsErrorMsg :
-          error?.response?.data?.message || error?.message || AppStrings.Network.oopsErrorMsg,
-        data: null,
-        success: false,
-        statusCode: errorCode
-      };
-    }).finally(() => {
       clearTimeout(apiTimeout);
-    })
-}
-
-const checkInternet = async () => {
-  let netState = await NetInfo.fetch()
-  return netState.isConnected
+      if (error?.response?.data?.message == AppStrings.Network.tokenExpired) {
+        let result = '';
+        // await refreshTokenRequest(internetValue); //refresh Token
+        if (result) {
+          await Api(internetValue, url, method, token, body, isFormData);
+        } else {
+          // await logoutFunc();
+        }
+      }
+      return error?.response?.data
+        ? error.response.data
+        : {
+            message: error?.message
+              ? error.message
+              : AppStrings.Network.somethingWrong,
+            data: null,
+            success: false,
+          };
+    });
 };
 
 export default Api;
