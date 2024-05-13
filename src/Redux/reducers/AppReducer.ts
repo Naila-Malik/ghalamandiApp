@@ -9,6 +9,8 @@ const initialState: IReduxState = {
   userData: null,
   mainMenuId: 0,
   isNotchDevice: false,
+  alertObj: null,
+  isAlertShow: {value: false, message: ''},
 };
 
 export const AppSlice = createSlice({
@@ -27,11 +29,17 @@ export const AppSlice = createSlice({
     setMainMenuId: (state, action) => {
       state.mainMenuId = action.payload;
     },
+    setAlertObj: (state, action) => {
+      state.alertObj = action.payload;
+    },
     setIsNotchDevice: (state, action) => {
       state.isNotchDevice = action.payload;
     },
     setNetConnected: (state, action) => {
       state.isNetConnected = action.payload;
+    },
+    setIsAlertShow: (state, action) => {
+      state.isAlertShow = action.payload;
     },
   },
 });
@@ -41,8 +49,10 @@ export const {
   setSafeArea,
   setUserData,
   setMainMenuId,
+  setAlertObj,
   setIsNotchDevice,
   setNetConnected,
+  setIsAlertShow,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

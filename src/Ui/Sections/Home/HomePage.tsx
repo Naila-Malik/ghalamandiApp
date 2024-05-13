@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import LogoHeader from '../../Components/Header/LogoHeader';
 import {
@@ -20,20 +20,45 @@ import {
 } from '../../../Utils/AppConstants';
 import Box from '../../Components/Box/Box';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useDispatch} from 'react-redux';
-import {setMainMenuId} from '../../../Redux/reducers/AppReducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLoader, setMainMenuId} from '../../../Redux/reducers/AppReducer';
 import {Routes} from '../../../Utils/Routes';
-
-const weather = {
-  degree: '13.0',
-  wind: 15.1,
-  humidity: '80%',
-  rain: '0.002m',
-  cloud: '80%',
-};
+import {getWheatherReq} from '../../../Network/Services/HomeApis';
 
 const HomePage = (props: ScreenProps) => {
   const dispatch = useDispatch();
+  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const [weather, setWheather] = useState({
+    degree: '',
+    wind: 0,
+    humidity: '',
+    rain: '',
+    cloud: '',
+  });
+
+  const fetchWheatherApi = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getWheatherReq(selector.isNetConnected);
+      // console.log('after', response.list[0].main.humidity);
+      // await response?.list.map(i =>  )
+      setWheather({
+        degree: '',
+        wind: response.list[0].wind.speed,
+        humidity: response.list[0].main.humidity,
+        rain: '',
+        cloud: response.list[0].clouds.all,
+      });
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchWheatherApi();
+  }, []);
   return (
     <View style={AppStyles.MainStyle}>
       <LogoHeader

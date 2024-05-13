@@ -21,7 +21,7 @@ import {
   facebookLoginRequest,
   getGoogleUserRequest,
 } from './Social.d';
-import {getRequest} from '../Network/Services/ApiServices';
+import {getRequest} from '../Network/Services/HomeApis';
 import {GET_CHILD_LIST_URL} from '../Network/Urls';
 // import RNFS, { DownloadProgressCallbackResult } from 'react-native-fs';
 // import Share from 'react-native-share';
@@ -143,9 +143,7 @@ export default class CommonDataManager {
   };
   saveUserToken = async (token: string) => {
     try {
-      const refinedToken = this.getRefinedBearerToken(token);
-      console.log('token: ', token);
-      await AsyncStorage.setItem(AsyncKeyStrings.Auth.userToken, refinedToken);
+      await AsyncStorage.setItem(AsyncKeyStrings.Auth.userToken, token);
     } catch (e) {
       console.log('Error storing usertoken', e);
     }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "373999268690",
+    "project_id": "ghalamandiapp-26134",
+    "storage_bucket": "ghalamandiapp-26134.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373999268690:android:27889bf6f17888d15c808b",
+        "android_client_info": {
+          "package_name": "com.ghalamandiapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373999268690-mr04cdcm7l7t6r5kmjql9vt4ojarfvhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ghalamandiapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "373999268690-dlrkittko798tuqe0u89rl19csfhrtuc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqIgEAzXNTjY-uAZFxo_HbvjFDvtd1rW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373999268690-dlrkittko798tuqe0u89rl19csfhrtuc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

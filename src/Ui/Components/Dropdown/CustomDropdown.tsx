@@ -33,6 +33,7 @@ const CustomDropdown = (props: Props) => {
     setOption(false);
     props?.oneSelect(val);
   };
+  // console.log('data-------', props?.data);
   return (
     <View style={{}}>
       <TouchableWithoutFeedback onPress={selectOption}>
@@ -49,7 +50,8 @@ const CustomDropdown = (props: Props) => {
             return (
               <TouchableWithoutFeedback
                 onPress={() => oneSelectItem(val)}
-                style={styles.optionName}>
+                style={styles.optionName}
+                key={i}>
                 <Text style={{color: AppColors.grey.greyLighterLvl2}}>
                   {val?.name}
                 </Text>

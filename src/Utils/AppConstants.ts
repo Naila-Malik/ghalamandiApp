@@ -1,6 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {Dimensions, Platform, PixelRatio, StatusBar} from 'react-native';
-import moment from 'moment';
+// import moment from 'moment';
 import {Routes} from './Routes';
 export const platformVersion = Platform.Version;
 export type ScreenProps = StackScreenProps<any, any>;
@@ -20,7 +20,7 @@ export const isSmallDevice = ScreenSize.height < 700 ? true : false;
 export const maxDescriptionLength = 60;
 export const maxImageSizeInBytes = 10 * 1024 * 1024; // 10MB
 export const webClientIdSingin =
-  '525211041830-qbdjtvdr0n25igc3vjim3lnf6tkdptcv.apps.googleusercontent.com';
+  '373999268690-dlrkittko798tuqe0u89rl19csfhrtuc.apps.googleusercontent.com';
 
 export const isAndroid = Platform.OS == 'android';
 
@@ -39,6 +39,8 @@ export const AppImages = {
     DownArrow: require('../Ui/assets/images/Common/DownArrow.png'),
     rightArrow: require('../Ui/assets/images/Common/rightArrow.png'),
     placeholderImg: require('../Ui/assets/images/Common/placeholder.jpg'),
+    attachmentIcon: require('../Ui/assets/images/Common/attachmentIcon.png'),
+    crossIcon: require('../Ui/assets/images/Common/cross.png'),
   },
   Home: {
     windIcon: require('../Ui/assets/images/Home/wind.png'),
@@ -143,25 +145,26 @@ export const AppColors = {
   red: {
     dark: '#F14436',
   },
+  transparentColor: 'rgba(0,0,0,0.5)',
 };
 
-export const convertUtcToLocal = (dateString: any) => {
-  let parsedDate = moment(new Date(dateString)).toDate();
-  return moment(parsedDate).local();
-};
+// export const convertUtcToLocal = (dateString: any) => {
+//   let parsedDate = moment(new Date(dateString)).toDate();
+//   return moment(parsedDate).local();
+// };
 
-export const calculateWindowHeight = () => {
-  const windowHeight = Dimensions.get('window').height;
-  let statusHeight = StatusBar?.currentHeight ? StatusBar.currentHeight : 0;
-  let diff = Dimensions.get('screen').height - windowHeight;
-  const isPoco = Platform?.constants?.Brand?.toLowerCase() == 'poco';
-  const isRedmi = Platform?.constants?.Brand?.toLowerCase() == 'redmi';
+// export const calculateWindowHeight = () => {
+//   const windowHeight = Dimensions.get('window').height;
+//   let statusHeight = StatusBar?.currentHeight ? StatusBar.currentHeight : 0;
+//   let diff = Dimensions.get('screen').height - windowHeight;
+//   const isPoco = Platform?.constants?.Brand?.toLowerCase() == 'poco';
+//   const isRedmi = Platform?.constants?.Brand?.toLowerCase() == 'redmi';
 
-  if (diff <= 50 && !isPoco && !isRedmi) {
-    return windowHeight - (diff - statusHeight - 3);
-  }
-  return windowHeight;
-};
+//   if (diff <= 50 && !isPoco && !isRedmi) {
+//     return windowHeight - (diff - statusHeight - 3);
+//   }
+//   return windowHeight;
+// };
 
 export const isYouTubeVideo = (url: string) => {
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;

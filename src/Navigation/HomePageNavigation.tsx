@@ -4,8 +4,14 @@ import {
   CardStyleInterpolators,
 } from '@react-navigation/stack';
 import {Routes} from '../Utils/Routes';
-import {AppImages, ScreenProps, hv, normalized} from '../Utils/AppConstants';
-import {Image, View} from 'react-native';
+import {
+  AppColors,
+  AppImages,
+  ScreenProps,
+  hv,
+  normalized,
+} from '../Utils/AppConstants';
+import {Image, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {AppRootStore} from '../Redux/store/AppStore';
 import SalePurchaseScreen from '../Ui/Sections/SalePurchase/SalePurchaseScreen';
@@ -22,6 +28,8 @@ import AboutUsScreen from '../Ui/Sections/AboutUs/AboutUsScreen';
 import AddBidScreen from '../Ui/Sections/SalePurchase/AddBidScreen';
 import DealsHistory from '../Ui/Sections/SalePurchase/DealsHistory';
 import NewBid from '../Ui/Sections/SalePurchase/NewBid';
+import ProductDetail from '../Ui/Sections/SalePurchase/ProductDetail';
+import BottomTab from '../Ui/Components/CustomBottomTab/BottomTab';
 
 const Stack = createStackNavigator();
 
@@ -29,7 +37,7 @@ const HomePageNavigation = (props: ScreenProps) => {
   const {mainMenuId} = useSelector((state: AppRootStore) => state.AppReducer);
   const getCurrentStack = () => {
     if (mainMenuId == 1) {
-      return <SalePurchaseStack />;
+      return <BottomTabStack />;
     } else if (mainMenuId == 2) {
       return <MandiRatesStack />;
     } else if (mainMenuId == 3) {
@@ -58,9 +66,25 @@ const HomePageNavigation = (props: ScreenProps) => {
 };
 export default HomePageNavigation;
 
-const SalePurchaseStack = () => {
+const BottomTabStack = () => {
+  return <BottomTab />;
+};
+export const BidStack = () => {
   return (
     <Stack.Navigator
+      initialRouteName={Routes.Products.addBid}
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name={Routes.Products.addBid} component={AddBidScreen} />
+      <Stack.Screen name={Routes.Products.newCrop} component={NewBid} />
+    </Stack.Navigator>
+  );
+};
+export const SalePurchaseStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.Products.SalePurchase}
       screenOptions={{
         headerShown: false,
       }}>
@@ -68,11 +92,9 @@ const SalePurchaseStack = () => {
         name={Routes.Products.SalePurchase}
         component={SalePurchaseScreen}
       />
-      <Stack.Screen name={Routes.Products.addBid} component={AddBidScreen} />
-      <Stack.Screen name={Routes.Products.newCrop} component={NewBid} />
       <Stack.Screen
-        name={Routes.Products.dealsHistory}
-        component={DealsHistory}
+        name={Routes.Products.productDetail}
+        component={ProductDetail}
       />
     </Stack.Navigator>
   );
