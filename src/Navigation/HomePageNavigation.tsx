@@ -30,6 +30,14 @@ import DealsHistory from '../Ui/Sections/SalePurchase/DealsHistory';
 import NewBid from '../Ui/Sections/SalePurchase/NewBid';
 import ProductDetail from '../Ui/Sections/SalePurchase/ProductDetail';
 import BottomTab from '../Ui/Components/CustomBottomTab/BottomTab';
+import TodaysMandiRtaes from '../Ui/Sections/MandiRates/TodaysMandiRtaes';
+import FeedMillRates from '../Ui/Sections/MandiRates/FeedMillRates';
+import SugarMillRate from '../Ui/Sections/MandiRates/SugarMillRate';
+import CityRates from '../Ui/Sections/MandiRates/CityRates';
+import AddCropRate from '../Ui/Sections/MandiRates/AddCropRate';
+import ListCrop from '../Ui/Sections/MandiRates/ListCrop';
+import CityRatesDetail from '../Ui/Sections/MandiRates/CityRatesDetail';
+import CShopDetail from '../Ui/Sections/CommissionShops/CShopDetail';
 
 const Stack = createStackNavigator();
 
@@ -109,6 +117,28 @@ const MandiRatesStack = () => {
         name={Routes.MandiRates.MandiRatesHome}
         component={MandiRatesScreen}
       />
+      <Stack.Screen
+        name={Routes.MandiRates.MandiTodayRates}
+        component={TodaysMandiRtaes}
+      />
+      <Stack.Screen
+        name={Routes.MandiRates.FeedMillRates}
+        component={FeedMillRates}
+      />
+      <Stack.Screen
+        name={Routes.MandiRates.SugarMillRates}
+        component={SugarMillRate}
+      />
+      <Stack.Screen name={Routes.MandiRates.CityRates} component={CityRates} />
+      <Stack.Screen name={Routes.MandiRates.ListCrop} component={ListCrop} />
+      <Stack.Screen
+        name={Routes.MandiRates.AddNewRates}
+        component={AddCropRate}
+      />
+      <Stack.Screen
+        name={Routes.MandiRates.CityRatesDetail}
+        component={CityRatesDetail}
+      />
     </Stack.Navigator>
   );
 };
@@ -122,6 +152,7 @@ const CommissionShopsStack = () => {
         name={Routes.CShop.CShopHome}
         component={CommissionShopsScreen}
       />
+      <Stack.Screen name={Routes.CShop.CShopDetail} component={CShopDetail} />
     </Stack.Navigator>
   );
 };

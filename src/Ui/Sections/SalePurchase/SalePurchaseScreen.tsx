@@ -124,7 +124,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   onPress={() => {
                     setSelectedCate(0);
                   }}>
-                  <View style={styles.backBtn}>
+                  <View style={styles.backBtn2}>
                     <Image
                       source={AppImages.ProductCate.allIcon}
                       style={styles.img}
@@ -148,7 +148,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   data={productsCate}
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => `@${item.id}`}
+                  keyExtractor={(item, index) => `@${index}`}
                   renderItem={({item}: any) => {
                     // console.log('item--------------', item);
                     return (
@@ -195,7 +195,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   data={Arr}
                   numColumns={2}
                   showsVerticalScrollIndicator={false}
-                  keyExtractor={item => `@${item.id}`}
+                  keyExtractor={(item, index) => `@${index}`}
                   contentContainerStyle={styles.cardContainer}
                   renderItem={({item}: any) => {
                     return (
@@ -278,8 +278,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuBox: {
-    width: normalized(45),
-    height: normalized(45),
+    width: normalized(55),
+    height: normalized(55),
     ...AppStyles.centeredCommon,
     backgroundColor: AppColors.white.white,
     borderRadius: normalized(25),
@@ -293,6 +293,14 @@ const styles = StyleSheet.create({
     borderRadius: normalized(25),
     marginLeft: normalized(15),
     marginBottom: hv(10),
+  },
+  backBtn2: {
+    width: normalized(45),
+    height: normalized(45),
+    ...AppStyles.centeredCommon,
+    backgroundColor: AppColors.white.white,
+    borderRadius: normalized(25),
+    marginLeft: normalized(15),
   },
   txt: {
     fontSize: 12,

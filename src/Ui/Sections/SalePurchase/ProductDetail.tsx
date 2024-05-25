@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   AppColors,
   AppImages,
@@ -11,83 +11,90 @@ import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
 import {formateDate} from '../../../Utils/helper';
 import RoundButton from '../../Components/Button/RoundButton';
+import BottomSheet from '../../Components/CustomBottomSheet/BottomSheet';
+import {Routes} from '../../../Utils/Routes';
 
 const ProductDetail = (props: ScreenProps) => {
   let item = props?.route?.params?.item;
   // console.log('item----------', item);
+  const [showModal, setShowModal] = useState(false);
+
   return (
-    <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
+    <View style={AppStyles.MainStyle}>
       <AppHeader
         title={item?.crop_id}
         leftIcon
         onLeftIconPress={() => props?.navigation?.goBack()}
       />
-      <View style={styles.card}>
-        <View style={styles.imgBG}>
-          <Image
-            source={
-              (item?.images ?? []).length > 0
-                ? item?.images
-                : AppImages.Common.placeholderImg
-            }
-            style={styles.imgCard}
+      <View style={{padding: normalized(10), flex: 1}}>
+        <View style={styles.card}>
+          <View style={styles.imgBG}>
+            <Image
+              source={
+                (item?.images ?? []).length > 0
+                  ? item?.images
+                  : AppImages.Common.placeholderImg
+              }
+              style={styles.imgCard}
+            />
+          </View>
+          <View style={styles.TxtBG}>
+            <View style={styles.TxtBox}>
+              <Text style={styles.txt}>
+                {item?.crop_id} :{' '}
+                <Text style={styles.innerText}> ({item?.crop_type})</Text>{' '}
+              </Text>
+              <Text style={styles.txt}>
+                Date :{' '}
+                <Text style={styles.txt2}>{formateDate(item?.created_at)}</Text>{' '}
+              </Text>
+            </View>
+            <View style={styles.TxtBox}>
+              <Text style={styles.txt1}>
+                Demand :{' '}
+                <Text style={styles.txt2}>
+                  {' '}
+                  {item?.price}/ {item?.weight_unit}
+                </Text>{' '}
+              </Text>
+              <Text style={styles.txt1}>
+                Packing : <Text style={styles.txt2}>{item?.packing}</Text>{' '}
+              </Text>
+            </View>
+            <View style={[styles.TxtBox, {marginTop: hv(10)}]}>
+              <Text style={styles.txt2}>
+                Misture :{' '}
+                <Text style={styles.txt2}> {item?.moisture_percentage}%</Text>{' '}
+              </Text>
+              <Text style={styles.txt2}>
+                QTY :{' '}
+                <Text style={styles.txt2}>
+                  {item?.total_qty}
+                  {item?.weight_unit}
+                </Text>{' '}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <Text style={[styles.txt, {margin: hv(10)}]}>
+          {item?.stock_location}{' '}
+        </Text>
+        <View style={styles.btnBox}>
+          <RoundButton
+            title="Chat"
+            onPress={() => props.navigation.navigate(Routes.Inbox.InboxHome)}
+            containerStyle={styles.Btn}
+            titleStyle={{color: AppColors.green.dark}}
+          />
+          <RoundButton
+            title="Place Bid"
+            onPress={() => setShowModal(true)}
+            containerStyle={styles.Btn2}
+            titleStyle={{color: AppColors.white.white}}
           />
         </View>
-        <View style={styles.TxtBG}>
-          <View style={styles.TxtBox}>
-            <Text style={styles.txt}>
-              {item?.crop_id} :{' '}
-              <Text style={styles.innerText}> ({item?.crop_type})</Text>{' '}
-            </Text>
-            <Text style={styles.txt1}>
-              Date :{' '}
-              <Text style={styles.txt2}>{formateDate(item?.created_at)}</Text>{' '}
-            </Text>
-          </View>
-          <View style={styles.TxtBox}>
-            <Text style={styles.txt1}>
-              Demand :{' '}
-              <Text style={styles.txt2}>
-                {' '}
-                {item?.price}/ {item?.weight_unit}
-              </Text>{' '}
-            </Text>
-            <Text style={styles.txt1}>
-              Packing : <Text style={styles.txt2}>{item?.packing}</Text>{' '}
-            </Text>
-          </View>
-          <View style={[styles.TxtBox, {marginTop: hv(10)}]}>
-            <Text style={styles.txt2}>
-              Misture :{' '}
-              <Text style={styles.txt2}> {item?.moisture_percentage}%</Text>{' '}
-            </Text>
-            <Text style={styles.txt2}>
-              QTY :{' '}
-              <Text style={styles.txt2}>
-                {item?.total_qty}
-                {item?.weight_unit}
-              </Text>{' '}
-            </Text>
-          </View>
-        </View>
       </View>
-      <Text style={[styles.txt, {margin: hv(10)}]}>
-        {item?.stock_location}{' '}
-      </Text>
-      <View style={styles.btnBox}>
-        <RoundButton
-          title="Chat"
-          onPress={() => {}}
-          containerStyle={styles.Btn}
-          titleStyle={{color: AppColors.green.dark}}
-        />
-        <RoundButton
-          title="Place Bid"
-          onPress={() => {}}
-          containerStyle={styles.Btn2}
-          titleStyle={{color: AppColors.white.white}}
-        />
-      </View>
+      {showModal && <BottomSheet />}
     </View>
   );
 };
@@ -144,6 +151,7 @@ const styles = StyleSheet.create({
   TxtBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   btnBox: {
     flexDirection: 'row',

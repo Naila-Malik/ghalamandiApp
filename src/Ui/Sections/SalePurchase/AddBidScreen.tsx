@@ -60,7 +60,7 @@ const AddBidScreen = (props: ScreenProps) => {
           data={productsCate}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => `@${item.id}`}
+          keyExtractor={(item, index) => `@${index}`}
           contentContainerStyle={styles.cardContainer}
           renderItem={({item}: any) => {
             return (
