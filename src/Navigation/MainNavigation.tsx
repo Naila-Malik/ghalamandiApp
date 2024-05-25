@@ -19,6 +19,8 @@ import {navigationRef} from './RootNavigation';
 import HomePage from '../Ui/Sections/Home/HomePage';
 import HomePageNavigation from './HomePageNavigation';
 import AuthStack from './AuthNavigation';
+import {StatusBar} from 'react-native';
+import {AppColors} from '../Utils/AppConstants';
 
 const MainStack = createStackNavigator();
 const AppStack = () => {
@@ -80,6 +82,12 @@ const AppContainer = () => {
   // console.log('user data--------------', userData);
   return (
     <NavigationContainer ref={navigationRef}>
+      {/* <StatusBar
+        barStyle="dark-content"
+        hidden={false}
+        backgroundColor={AppColors.bgColor}
+        translucent={true}
+      /> */}
       {userData ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );

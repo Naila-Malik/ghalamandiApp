@@ -19,9 +19,17 @@ export const Routes = {
   },
   MandiRates: {
     MandiRatesHome: 'MandiRatesHome',
+    MandiTodayRates: 'MandiTodayRates',
+    CityRates: 'CityRates',
+    CityRatesDetail: 'CityRatesDetail',
+    FeedMillRates: 'FeedMillRates',
+    SugarMillRates: 'SugarMillRates',
+    AddNewRates: 'AddNewRates',
+    ListCrop: 'ListCrop',
   },
   CShop: {
     CShopHome: 'CShopHome',
+    CShopDetail: 'CShopDetail',
   },
   MyShop: {
     MyShopHome: 'MyShopHome',

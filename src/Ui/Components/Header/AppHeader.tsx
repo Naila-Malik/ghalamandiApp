@@ -123,8 +123,8 @@ const styles = StyleSheet.create({
     color: AppColors.black.black,
     flex: 1,
     textAlign: 'center',
-    ...AppStyles.textBold,
     fontSize: normalized(18),
+    fontWeight: '700',
   },
   rightImgBox: {
     width: normalized(40),

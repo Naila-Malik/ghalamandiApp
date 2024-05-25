@@ -34,7 +34,7 @@ const DealsHistory = (props: ScreenProps) => {
     dispatch(setLoader(true));
     try {
       let response: any = await getMyDeals(selector.isNetConnected);
-      console.log('response-------my-------', response.data);
+      console.log('response-------my-------', response);
       {
         selector?.isLoaderStart ? <AppLoader /> : null;
       }

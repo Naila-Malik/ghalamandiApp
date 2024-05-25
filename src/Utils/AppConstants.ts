@@ -41,6 +41,10 @@ export const AppImages = {
     placeholderImg: require('../Ui/assets/images/Common/placeholder.jpg'),
     attachmentIcon: require('../Ui/assets/images/Common/attachmentIcon.png'),
     crossIcon: require('../Ui/assets/images/Common/cross.png'),
+    SearchIcon: require('../Ui/assets/images/Common/SearchIcon.png'),
+    BackgrounImage: require('../Ui/assets/images/Common/BackgrounImage.png'),
+    menuIcon: require('../Ui/assets/images/Common/menuIcon.jpg'),
+    phoneIcon: require('../Ui/assets/images/Common/phoneIcon.png'),
   },
   Home: {
     windIcon: require('../Ui/assets/images/Home/wind.png'),
@@ -96,6 +100,11 @@ export const AppImages = {
     StaticsIcon: require('../Ui/assets/images/Settings/statics.png'),
     StatusIcon: require('../Ui/assets/images/Settings/status.png'),
     notifiIcon: require('../Ui/assets/images/Settings/notifi.png'),
+  },
+  MandiRates: {
+    todaysRates: require('../Ui/assets/images/MandiRates/todaysRates.png'),
+    feedMills: require('../Ui/assets/images/MandiRates/feedMills.png'),
+    sugarMills: require('../Ui/assets/images/MandiRates/sugarMills.png'),
   },
 };
 
