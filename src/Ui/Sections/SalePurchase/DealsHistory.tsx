@@ -23,21 +23,21 @@ import {getMyDeals, getUserDeals} from '../../../Network/Services/HomeApis';
 import {useSelector, useDispatch} from 'react-redux';
 import {setLoader} from '../../../Redux/reducers/AppReducer';
 import AppLoader from '../../Components/Loader/AppLoader';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const DealsHistory = (props: ScreenProps) => {
   const [selected, setSelected] = useState('MyDeals');
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const dispatch = useDispatch();
   const [Arr, setArr] = useState([]);
 
   const fetchMyDeals = async () => {
-    dispatch(setLoader(true));
     try {
-      let response: any = await getMyDeals(selector.isNetConnected);
+      dispatch(setLoader(true));
+      let response: any = await getMyDeals(isNetConnected);
       console.log('response-------my-------', response);
-      {
-        selector?.isLoaderStart ? <AppLoader /> : null;
-      }
       setArr(response.data);
       // response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
@@ -48,13 +48,10 @@ const DealsHistory = (props: ScreenProps) => {
   };
 
   const fetchUserDeals = async () => {
-    dispatch(setLoader(true));
     try {
-      let response: any = await getUserDeals(selector.isNetConnected);
+      dispatch(setLoader(true));
+      let response: any = await getUserDeals(isNetConnected);
       console.log('response--------user------', response.data);
-      {
-        selector?.isLoaderStart ? <AppLoader /> : null;
-      }
       setArr(response.data);
 
       // response?.success ? setproductsCate(response?.data) : [];
@@ -114,16 +111,20 @@ const DealsHistory = (props: ScreenProps) => {
         />
       </View>
       <View style={styles.body}>
-        {Arr?.length == 0 && !selector?.isLoaderStart ? (
+        {isLoaderStart ? (
           <View style={styles.emptyCont}>
-            <Text style={styles.emptyTxt}>No Deal found!</Text>
+            <AppLoader visible={isLoaderStart} />
+          </View>
+        ) : Arr?.length == 0 && !isLoaderStart ? (
+          <View style={styles.emptyCont}>
+            <Text style={styles.emptyTxt}>No Bids found!</Text>
           </View>
         ) : (
           <FlatList
             data={Arr}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => `@${item.id}`}
+            keyExtractor={(item, index) => `@${index}`}
             contentContainerStyle={styles.cardContainer}
             renderItem={({item}: any) => {
               return (

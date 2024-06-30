@@ -23,12 +23,15 @@ import DocumentViewer from '../../Modals/document-viewer';
 import {useDocument} from '../../../Hooks/use-document';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Routes} from '../../../Utils/Routes';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const NewBid = (props: ScreenProps) => {
   let name = props?.route?.params?.name;
   let id = props?.route?.params?.id;
   const dispatch = useDispatch();
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const documentViewer = useDocument<string>();
   const [cropTypeDD, setCropTypeDD] = useState([
     {
@@ -65,7 +68,7 @@ const NewBid = (props: ScreenProps) => {
   const fetchCropTypeDD = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getCropTypeDD(selector.isNetConnected, id);
+      let response: any = await getCropTypeDD(isNetConnected, id);
       const transformedArray = response?.data?.map((item: any) => ({
         id: item.id,
         name: item.type_name,
@@ -129,7 +132,7 @@ const NewBid = (props: ScreenProps) => {
     };
     try {
       dispatch(setLoader(true));
-      let response: any = await addStoreRequest(selector.isNetConnected, body);
+      let response: any = await addStoreRequest(isNetConnected, body);
       console.log('respose-----------', response);
       if (response?.success) {
         props.navigation.navigate(Routes.Products.SalePurchase);

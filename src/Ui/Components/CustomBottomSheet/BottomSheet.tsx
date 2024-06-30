@@ -6,9 +6,11 @@ import RoundButton from '../Button/RoundButton';
 
 interface Props {
   onPress?: () => void;
+  amount?: number;
+  setAmount?: (amount: number) => void;
 }
-const BottomSheet = () => {
-  const [amount, setAmount] = useState();
+
+const BottomSheet = (props: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.TxtBox}>
@@ -19,13 +21,13 @@ const BottomSheet = () => {
         <Text style={styles.txt1}>Bid Amount</Text>
       </View>
       <RoundInput
-        value={amount}
+        value={props?.amount}
         placeholder="2500"
-        onChangeText={value => setAmount(value)}
+        onChangeText={text => props?.setAmount && props.setAmount(Number(text))}
       />
       <RoundButton
         title="Submit Bid"
-        onPress={() => {}}
+        onPress={props?.onPress}
         containerStyle={styles.btn}
         titleStyle={styles.txtBtn}
       />
@@ -39,8 +41,8 @@ const styles = StyleSheet.create({
   container: {
     // height: hv(150),
     width: '100%',
-    backgroundColor: 'yellow',
-    // backgroundColor: AppColors.grey.greyLighter,
+    // backgroundColor: 'yellow',
+    backgroundColor: AppColors.grey.grey,
     bottom: 0,
     position: 'absolute',
     borderTopLeftRadius: normalized(30),

@@ -33,12 +33,15 @@ export const Routes = {
   },
   MyShop: {
     MyShopHome: 'MyShopHome',
+    CityList: 'CityList',
   },
   Inbox: {
     InboxHome: 'InboxHome',
+    RealtimeChat: 'RealtimeChat',
   },
   Timeline: {
     TimelineHome: 'TimelineHome',
+    AddNewTimeLine: 'AddNewTimeLine',
   },
   Notification: {
     NotificationHome: 'NotificationHome',

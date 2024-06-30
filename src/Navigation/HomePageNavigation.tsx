@@ -38,6 +38,9 @@ import AddCropRate from '../Ui/Sections/MandiRates/AddCropRate';
 import ListCrop from '../Ui/Sections/MandiRates/ListCrop';
 import CityRatesDetail from '../Ui/Sections/MandiRates/CityRatesDetail';
 import CShopDetail from '../Ui/Sections/CommissionShops/CShopDetail';
+import CityList from '../Ui/Sections/MyShop/CityList';
+import AddNewTimeLine from '../Ui/Sections/TimeLine/AddNewTimeLine';
+import RealtimeChat from '../Ui/Sections/Inbox/RealtimeChat';
 
 const Stack = createStackNavigator();
 
@@ -162,6 +165,7 @@ const MyShopsStack = () => {
       screenOptions={{
         headerShown: false,
       }}>
+      <Stack.Screen name={Routes.MyShop.CityList} component={CityList} />
       <Stack.Screen name={Routes.MyShop.MyShopHome} component={MyShopScreen} />
     </Stack.Navigator>
   );
@@ -173,6 +177,7 @@ const InboxStack = () => {
         headerShown: false,
       }}>
       <Stack.Screen name={Routes.Inbox.InboxHome} component={InboxScreen} />
+      <Stack.Screen name={Routes.Inbox.RealtimeChat} component={RealtimeChat} />
     </Stack.Navigator>
   );
 };
@@ -185,6 +190,10 @@ const TimeLineStack = () => {
       <Stack.Screen
         name={Routes.Timeline.TimelineHome}
         component={TimeLineScreen}
+      />
+      <Stack.Screen
+        name={Routes.Timeline.AddNewTimeLine}
+        component={AddNewTimeLine}
       />
     </Stack.Navigator>
   );
