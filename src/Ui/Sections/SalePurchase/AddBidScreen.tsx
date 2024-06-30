@@ -22,10 +22,13 @@ import {getAllCrops} from '../../../Network/Services/HomeApis';
 import {setIsAlertShow, setLoader} from '../../../Redux/reducers/AppReducer';
 import {useDispatch, useSelector} from 'react-redux';
 import AppLoader from '../../Components/Loader/AppLoader';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const AddBidScreen = (props: ScreenProps) => {
   const dispatch = useDispatch();
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const [productsCate, setproductsCate] = useState([]);
 
   const fetchCropApi = async () => {
@@ -33,9 +36,6 @@ const AddBidScreen = (props: ScreenProps) => {
     try {
       let response: any = await getAllCrops(selector.isNetConnected);
       response?.success ? setproductsCate(response?.data) : [];
-      {
-        selector?.isLoaderStart ? <AppLoader /> : null;
-      }
       // dispatch(setIsAlertShow({value: true, message: response?.message}));
     } catch (e) {
       console.log('error------> ', e);
@@ -51,9 +51,13 @@ const AddBidScreen = (props: ScreenProps) => {
   return (
     <View style={AppStyles.MainStyle}>
       <Text style={styles.txt2}>Select Crop</Text>
-      {productsCate?.length == 0 && !selector?.isLoaderStart ? (
+      {isLoaderStart ? (
         <View style={styles.emptyCont}>
-          <Text style={styles.emptyTxt}>No Category found!</Text>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      ) : productsCate?.length == 0 && !isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <Text style={styles.emptyTxt}>No Bids found!</Text>
         </View>
       ) : (
         <FlatList

@@ -5,9 +5,12 @@ import AppHeader from '../../Components/Header/AppHeader';
 import {useSelector, useDispatch} from 'react-redux';
 import NotificationListComp from './NotificationListComp';
 import {AppColors, ScreenProps, normalized} from '../../../Utils/AppConstants';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const NotificationsScreen = (props: ScreenProps) => {
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const dispatch = useDispatch();
   const NotificationList = [{}];
   return (
@@ -63,7 +66,7 @@ const NotificationsScreen = (props: ScreenProps) => {
               );
             }}
           />
-        ) : selector?.isLoaderStart ? null : (
+        ) : isLoaderStart ? null : (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Text
@@ -72,7 +75,7 @@ const NotificationsScreen = (props: ScreenProps) => {
                 color: AppColors.black.black,
                 fontWeight: '500',
               }}>
-              Notification not found
+              Notification not found!
             </Text>
           </View>
         )}

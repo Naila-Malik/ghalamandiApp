@@ -24,48 +24,66 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setLoader, setMainMenuId} from '../../../Redux/reducers/AppReducer';
 import {Routes} from '../../../Utils/Routes';
 import {getWheatherReq} from '../../../Network/Services/HomeApis';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import moment from 'moment';
 
 const HomePage = (props: ScreenProps) => {
   const dispatch = useDispatch();
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
-  const [weather, setWheather] = useState({
-    degree: '',
-    wind: 0,
-    humidity: '',
-    rain: '',
-    cloud: '',
-  });
+  const [degree, setDegree] = useState('');
+  const date = new Date();
+  const kelvinToCelsius = (kelvin: number) => (kelvin - 273.15).toFixed(1);
+  const {isNetConnected} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
+  const [weather, setWheather] = useState(weatherArray);
 
   const fetchWheatherApi = async () => {
-    dispatch(setLoader(true));
     try {
-      let response: any = await getWheatherReq(selector.isNetConnected);
-      // console.log('after', response.list[0].main.humidity);
-      // await response?.list.map(i =>  )
-      setWheather({
-        degree: '',
+      let response: any = await getWheatherReq(isNetConnected);
+      setDegree(`${kelvinToCelsius(response.list[0].main.temp)}°C`);
+      return {
         wind: response.list[0].wind.speed,
         humidity: response.list[0].main.humidity,
-        rain: '',
+        rain: `${(response.list[0]?.pop * 100).toFixed(0)}%`,
         cloud: response.list[0].clouds.all,
-      });
+      };
     } catch (e) {
       console.log('error------> ', e);
-    } finally {
-      dispatch(setLoader(false));
     }
   };
 
   useEffect(() => {
-    fetchWheatherApi();
+    getWeatherData();
   }, []);
+
+  const getWeatherData = async () => {
+    const dynamicData = await fetchWheatherApi();
+    if (dynamicData) {
+      const updatedData = weather.map(item => {
+        switch (item.title) {
+          case 'Wind':
+            return {...item, label: dynamicData.wind};
+          case 'Humidity':
+            return {...item, label: dynamicData.humidity};
+          case 'Rain':
+            return {...item, label: dynamicData.rain};
+          case 'Cloud':
+            return {...item, label: dynamicData.cloud};
+          default:
+            return item;
+        }
+      });
+      setWheather(updatedData);
+    }
+  };
+
   return (
     <View style={AppStyles.MainStyle}>
       <LogoHeader
         title=" آپ کا آن لائن زرعی بازار"
-        day="Monday"
-        date="26"
-        month="فروری"
+        day={date?.toLocaleString('en-US', {weekday: 'long'})}
+        date={date.getDate()}
+        month={date?.toLocaleString('ur', {month: 'long'})}
       />
       <View style={styles.body}>
         <View style={styles.barContainer}>
@@ -73,11 +91,11 @@ const HomePage = (props: ScreenProps) => {
             <ImageBackground
               source={AppImages.Home.weatherImg}
               style={styles.Bgimg}>
-              <Text style={styles.degreeTxt}>{`${weather.degree} `} </Text>
+              <Text style={styles.degreeTxt}>{degree} </Text>
             </ImageBackground>
           </View>
           <FlatList
-            data={weatherArray}
+            data={weather}
             keyExtractor={item => `@${item.id}`}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -143,7 +161,7 @@ const styles = StyleSheet.create({
   degreeTxt: {
     ...AppStyles.textMedium,
     fontWeight: 'bold',
-    fontSize: 30,
+    fontSize: normalized(25),
     color: AppColors.black.black,
     textAlign: 'center',
     marginTop: hv(30),

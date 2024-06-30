@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {
   AppColors,
@@ -17,7 +17,15 @@ import {Routes} from '../../../Utils/Routes';
 const ProductDetail = (props: ScreenProps) => {
   let item = props?.route?.params?.item;
   // console.log('item----------', item);
+  const [amount, setAmount] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
+
+  const handlePress = () => {
+    // Handle the press event
+    // console.log('Bid submitted with amount:', amount);
+    Alert.alert('Bid submitted with amount:', amount.toString());
+    setShowModal(false);
+  };
 
   return (
     <View style={AppStyles.MainStyle}>
@@ -94,7 +102,13 @@ const ProductDetail = (props: ScreenProps) => {
           />
         </View>
       </View>
-      {showModal && <BottomSheet />}
+      {showModal && (
+        <BottomSheet
+          amount={amount}
+          setAmount={setAmount}
+          onPress={handlePress}
+        />
+      )}
     </View>
   );
 };

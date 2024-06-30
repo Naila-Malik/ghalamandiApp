@@ -20,7 +20,7 @@ import {AppStyles} from '../../../Utils/AppStyles';
 interface Props {
   title?: string;
   day?: string;
-  date?: string;
+  date?: number;
   month?: string;
   titleStyle?: TextStyle;
   leftIconStyles?: ImageStyle;

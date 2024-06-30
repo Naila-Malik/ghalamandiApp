@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -30,45 +31,42 @@ import {
 import {setLoader} from '../../../Redux/reducers/AppReducer';
 import {BASE_URL} from '../../../Network/Urls';
 import AppLoader from '../../Components/Loader/AppLoader';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const SalePurchaseScreen = (props: ScreenProps) => {
   const [selectedItem, setSelectedItem] = useState('salePurchase');
   const [selectedCate, setSelectedCate] = useState(0);
   const [Arr, setArr] = useState([]);
   const [productsCate, setproductsCate] = useState([]);
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const dispatch = useDispatch();
 
   const fetchCropApi = async () => {
-    dispatch(setLoader(true));
+    // dispatch(setLoader(true));
     try {
-      let response: any = await getAllCrops(selector.isNetConnected);
+      let response: any = await getAllCrops(isNetConnected);
       response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
       console.log('error------> ', e);
     } finally {
-      dispatch(setLoader(false));
+      // dispatch(setLoader(false));
     }
   };
+
   const fetchAllProApi = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getAllPro(selector.isNetConnected);
-      // console.log('response--------------', response.data);
-      console.log('response--------------', selector?.isLoaderStart);
+      let response: any = await getAllPro(isNetConnected);
       setArr(response.data);
-      {
-        selector?.isLoaderStart ? (
-          <AppLoader visisble={selector?.isLoaderStart} />
-        ) : null;
-      }
-      // response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
       console.log('error------> ', e);
     } finally {
       dispatch(setLoader(false));
     }
   };
+
   useEffect(() => {
     fetchCropApi();
     {
@@ -79,17 +77,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
   const fetchProBYCrop = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getProByCrop(
-        selector.isNetConnected,
-        selectedCate,
-      );
-      // console.log('response--------------', response.data);
-      console.log('response--------------', selector?.isLoaderStart);
-      {
-        selector?.isLoaderStart ? (
-          <AppLoader visisble={selector?.isLoaderStart} />
-        ) : null;
-      }
+      let response: any = await getProByCrop(isNetConnected, selectedCate);
       setArr(response.data);
       // response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
@@ -186,7 +174,11 @@ const SalePurchaseScreen = (props: ScreenProps) => {
               </View>
             </View>
             <View style={styles.body}>
-              {Arr?.length == 0 && !selector?.isLoaderStart ? (
+              {isLoaderStart ? (
+                <View style={styles.emptyCont}>
+                  <AppLoader visible={isLoaderStart} />
+                </View>
+              ) : Arr?.length == 0 && !isLoaderStart ? (
                 <View style={styles.emptyCont}>
                   <Text style={styles.emptyTxt}>No Product found!</Text>
                 </View>

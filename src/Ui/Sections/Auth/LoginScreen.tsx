@@ -25,9 +25,13 @@ import CommonDataManager from '../../../Utils/CommonManager';
 import {loginRequest} from '../../../Network/Services/HomeApis';
 import {ApiResponseHandler} from '../../../Network/ApiResponseHandler';
 import {AppStrings} from '../../../Utils/Strings';
+import AppLoader from '../../Components/Loader/AppLoader';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const LoginScreen = (props: ScreenProps) => {
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isLoaderStart, isNetConnected} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const dispatch = useDispatch();
 
   return (
@@ -43,74 +47,82 @@ const LoginScreen = (props: ScreenProps) => {
       <Text style={styles.text}>
         Log in to your existing account of e ghala mandi{' '}
       </Text>
-      <RoundButton
-        title="Google"
-        onPress={() => {
-          GoogleSignin.configure({
-            webClientId: webClientIdSingin,
-            // iosClientId: 'ADD_YOUR_iOS_CLIENT_ID_HERE',
-            offlineAccess: true,
-          });
-          GoogleSignin.hasPlayServices()
-            .then(hasPlayService => {
-              if (hasPlayService) {
-                GoogleSignin.signIn()
-                  .then(async userInfo => {
-                    try {
-                      dispatch(setLoader(true));
-                      let response: ApiResponseHandler<any> =
-                        await loginRequest(selector.isNetConnected, userInfo);
-                      if (response?.success) {
-                        await CommonDataManager.getSharedInstance().saveUserData(
-                          userInfo.user,
-                        );
-                        await CommonDataManager.getSharedInstance().saveUserToken(
-                          response?.token,
-                        );
-
-                        dispatch(setUserData(response.data));
-                      } else {
-                        dispatch(
-                          setAlertObj({
-                            title: AppStrings.Network.errorTitle,
-                            message:
-                              response?.statusCode == 400 ||
-                              response?.statusCode == 401
-                                ? AppStrings.Validation.incorrectOtpError
-                                : response.message,
-                          }),
-                        );
-                      }
-                    } catch (e) {
-                      console.log('error in registration process ', e);
-                    } finally {
-                      dispatch(setLoader(false));
-                    }
-                  })
-                  .catch(e => {
-                    console.log('ERROR IS after signin: ' + JSON.stringify(e));
-                  });
-              }
-            })
-            .catch(e => {
-              console.log('ERROR IS: ' + JSON.stringify(e));
+      {!isLoaderStart ? (
+        <RoundButton
+          title="Google"
+          onPress={() => {
+            GoogleSignin.configure({
+              webClientId: webClientIdSingin,
+              // iosClientId: 'ADD_YOUR_iOS_CLIENT_ID_HERE',
+              offlineAccess: true,
             });
-        }}
-        icon={AppImages.Auth.Gicon}
-        iconStyles={{
-          width: normalized(20),
-          height: hv(20),
-          resizeMode: 'contain',
-        }}
-        containerStyle={{
-          backgroundColor: AppColors.red.dark,
-          marginTop: hv(20),
-          alignItems: 'center',
-        }}
-        titleStyle={{
-          color: AppColors.white.white,
-        }}
-      />
+            GoogleSignin.hasPlayServices()
+              .then(hasPlayService => {
+                if (hasPlayService) {
+                  GoogleSignin.signIn()
+                    .then(async userInfo => {
+                      try {
+                        dispatch(setLoader(true));
+                        let response: ApiResponseHandler<any> =
+                          await loginRequest(isNetConnected, userInfo);
+                        if (response?.success) {
+                          await CommonDataManager.getSharedInstance().saveUserData(
+                            userInfo.user,
+                          );
+                          await CommonDataManager.getSharedInstance().saveUserToken(
+                            response?.token,
+                          );
+
+                          dispatch(setUserData(response.data));
+                        } else {
+                          dispatch(
+                            setAlertObj({
+                              title: AppStrings.Network.errorTitle,
+                              message:
+                                response?.statusCode == 400 ||
+                                response?.statusCode == 401
+                                  ? AppStrings.Validation.incorrectOtpError
+                                  : response.message,
+                            }),
+                          );
+                        }
+                      } catch (e) {
+                        console.log('error in registration process ', e);
+                      } finally {
+                        dispatch(setLoader(false));
+                      }
+                    })
+                    .catch(e => {
+                      console.log(
+                        'ERROR IS after signin: ' + JSON.stringify(e),
+                      );
+                    });
+                }
+              })
+              .catch(e => {
+                console.log('ERROR IS: ' + JSON.stringify(e));
+              });
+          }}
+          icon={AppImages.Auth.Gicon}
+          iconStyles={{
+            width: normalized(20),
+            height: hv(20),
+            resizeMode: 'contain',
+          }}
+          containerStyle={{
+            backgroundColor: AppColors.red.dark,
+            marginTop: hv(20),
+            alignItems: 'center',
+          }}
+          titleStyle={{
+            color: AppColors.white.white,
+          }}
+        />
+      ) : (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      )}
     </View>
   );
 };
@@ -125,14 +137,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: normalized(14),
-    // fontFamily: '',
     fontWeight: 'bold',
     color: AppColors.black.black,
   },
   text: {
     fontSize: normalized(14),
-    // fontFamily: '',
     fontWeight: '400',
     color: AppColors.black.black,
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
   },
 });

@@ -7,22 +7,13 @@ import {
 } from 'react-native';
 import {ScreenProps, isAndroid} from './AppConstants';
 import {AppStrings, AsyncKeyStrings} from './Strings';
-import {
-  setAlertObj,
-  setChildList,
-  setFetchUpdatedUser,
-  setSelectedChild,
-  setUserData,
-  toggleDrawer,
-} from '../Redux/reducers/AppReducer';
+import {setAlertObj} from '../Redux/reducers/AppReducer';
 import {SocialTypeStrings} from './AppEnums';
 import {
   appleLoginRequest,
   facebookLoginRequest,
   getGoogleUserRequest,
 } from './Social.d';
-import {getRequest} from '../Network/Services/HomeApis';
-import {GET_CHILD_LIST_URL} from '../Network/Urls';
 // import RNFS, { DownloadProgressCallbackResult } from 'react-native-fs';
 // import Share from 'react-native-share';
 // import { CameraRoll } from '@react-native-camera-roll/camera-roll';
@@ -79,12 +70,12 @@ export default class CommonDataManager {
     this._screenStack = props;
   };
 
-  logoutUser = async () => {
-    await AsyncStorage.removeItem(AsyncKeyStrings.Auth.userToken);
-    await AsyncStorage.removeItem(AsyncKeyStrings.Auth.userdata);
-    this.dispatch(setUserData(null));
-    this.dispatch(toggleDrawer(false));
-  };
+  // logoutUser = async () => {
+  //   await AsyncStorage.removeItem(AsyncKeyStrings.Auth.userToken);
+  //   await AsyncStorage.removeItem(AsyncKeyStrings.Auth.userdata);
+  //   this.dispatch(setUserData(null));
+  //   this.dispatch(toggleDrawer(false));
+  // };
 
   capitalizeFirstLetter = (str: any) => {
     if (!str) {
@@ -146,24 +137,6 @@ export default class CommonDataManager {
       await AsyncStorage.setItem(AsyncKeyStrings.Auth.userToken, token);
     } catch (e) {
       console.log('Error storing usertoken', e);
-    }
-  };
-
-  getChildList = async (parentId: string) => {
-    try {
-      const res: any = await getRequest(GET_CHILD_LIST_URL + parentId);
-      console.log('getChildList response : ', res);
-      if (res.success) {
-        if (res.data?.length > 0) {
-          this.dispatch(setChildList(res.data));
-          this.dispatch(setSelectedChild(res.data[0]));
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } catch (error) {
-      console.log('Error while getting child list', error);
     }
   };
 

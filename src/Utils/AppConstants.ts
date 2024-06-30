@@ -45,6 +45,11 @@ export const AppImages = {
     BackgrounImage: require('../Ui/assets/images/Common/BackgrounImage.png'),
     menuIcon: require('../Ui/assets/images/Common/menuIcon.jpg'),
     phoneIcon: require('../Ui/assets/images/Common/phoneIcon.png'),
+    uploadImageIcon: require('../Ui/assets/images/Common/uploadImageIcon.jpg'),
+    iconUpload: require('../Ui/assets/images/Common/iconUpload.png'),
+    likeIcon: require('../Ui/assets/images/Common/likeIcon.png'),
+    commentIcon: require('../Ui/assets/images/Common/commentIcon.png'),
+    sendChatIcon: require('../Ui/assets/images/Common/sendChat.png'),
   },
   Home: {
     windIcon: require('../Ui/assets/images/Home/wind.png'),
@@ -105,6 +110,14 @@ export const AppImages = {
     todaysRates: require('../Ui/assets/images/MandiRates/todaysRates.png'),
     feedMills: require('../Ui/assets/images/MandiRates/feedMills.png'),
     sugarMills: require('../Ui/assets/images/MandiRates/sugarMills.png'),
+  },
+  AboutUS: {
+    facebookIcon: require('../Ui/assets/images/AboutUs/facebook.png'),
+    webIcon: require('../Ui/assets/images/AboutUs/web.png'),
+    UtubeIcon: require('../Ui/assets/images/AboutUs/Utube.png'),
+    InstagramIcon: require('../Ui/assets/images/AboutUs/Instagram.png'),
+    tiktokIcon: require('../Ui/assets/images/AboutUs/tiktok.png'),
+    SahreIcon: require('../Ui/assets/images/AboutUs/SahreIcon.png'),
   },
 };
 
@@ -183,25 +196,25 @@ export const isYouTubeVideo = (url: string) => {
 export const weatherArray = [
   {
     id: 1,
-    label: '151.1kph',
+    label: null,
     title: 'Wind',
     icon: AppImages.Home.windIcon,
   },
   {
     id: 2,
-    label: '80%',
+    label: null,
     title: 'Humidity',
     icon: AppImages.Home.humidityIcon,
   },
   {
     id: 3,
-    label: '0.002mm',
+    label: null,
     title: 'Rain',
     icon: AppImages.Home.rainIcon,
   },
   {
     id: 4,
-    label: '80%',
+    label: null,
     title: 'Cloud',
     icon: AppImages.Home.cloudIcon,
   },

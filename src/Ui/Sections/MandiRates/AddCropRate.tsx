@@ -31,13 +31,16 @@ import RoundButton from '../../Components/Button/RoundButton';
 import RoundInput from '../../Components/CustomInput/RoundInput';
 import CustomDropdown from '../../Components/Dropdown/CustomDropdown';
 import FileInput from '../../Components/FileInput/FileInput';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const AddCropRate = (props: ScreenProps) => {
   let name = props?.route?.params?.name;
   let id = props?.route?.params?.id;
   const dispatch = useDispatch();
   const date = useMemo(() => new Date(), []);
-  const selector = useSelector((AppState: any) => AppState.AppReducer);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
   const [cropTypeDD, setCropTypeDD] = useState([
     {
       id: 0,
@@ -48,14 +51,13 @@ const AddCropRate = (props: ScreenProps) => {
   const fetchCropTypeDD = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getCropTypeDD(selector.isNetConnected, id);
+      let response: any = await getCropTypeDD(isNetConnected, id);
       const transformedArray = response?.data?.map((item: any) => ({
         id: item.id,
         name: item.type_name,
       }));
 
       setCropTypeDD(transformedArray);
-      // console.log('cropTypeDD--------', cropTypeDD);
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -97,7 +99,7 @@ const AddCropRate = (props: ScreenProps) => {
     };
     try {
       dispatch(setLoader(true));
-      let response: any = await addStoreRequest(selector.isNetConnected, body);
+      let response: any = await addStoreRequest(isNetConnected, body);
       console.log('respose-----------', response);
       if (response?.success) {
         props.navigation.navigate(Routes.Products.SalePurchase);

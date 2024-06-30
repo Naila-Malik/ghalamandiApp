@@ -13,3 +13,8 @@ export const GET_CROP_TYPE_DD = BASE_URL + '/user/get-crop-type';
 export const ADD_PROD_STORE = BASE_URL + '/user/sale-purcahse/store';
 export const GET_MY_DEALS = BASE_URL + '/user/my-deals';
 export const GET_USER_DEALS = BASE_URL + '/user/bid-deals';
+
+//Timeline Urls
+export const GET_All_TIMELINES = BASE_URL + '/user/timeline-get';
+export const POST_TIMELINE = BASE_URL + '/user/timeline-post';
+export const Like_TIMELINE = BASE_URL + '/user/like-post';
