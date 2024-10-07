@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   AppColors,
   AppImages,
@@ -18,25 +18,41 @@ import AppHeader from '../../Components/Header/AppHeader';
 import {AppStyles} from '../../../Utils/AppStyles';
 import {formateDate} from '../../../Utils/helper';
 import {Routes} from '../../../Utils/Routes';
+import {getCityRate} from '../../../Network/Services/MandiRates';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const CityRatesDetail = (props: ScreenProps) => {
   const date = useMemo(() => new Date(), []);
-  const {name} = props?.route?.params;
-  const arr = [
-    {
-      name: 'Cotton',
-      id: 0,
-      min: 6500,
-      max: 7500,
-      type: 'General',
-    },
-    // {
-    //   name: 'Maze',
-    //   id: 1,
-    //   min: 6500,
-    //   max: 7500,
-    // },
-  ];
+  const {name, id} = props?.route?.params;
+  const [cityRate, setCityRate] = useState([]);
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
+  const dispatch = useDispatch();
+
+  const fetchCityRates = async () => {
+    let body = {
+      id: id,
+    };
+    try {
+      dispatch(setLoader(true));
+      let response: any = await getCityRate(isNetConnected, body);
+      response?.success ? setCityRate(response?.data?.city) : [];
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  useEffect(() => {
+    if (id) {
+      fetchCityRates();
+    }
+  }, []);
+
   return (
     <ImageBackground
       source={AppImages.Common.BackgrounImage}
@@ -50,30 +66,39 @@ const CityRatesDetail = (props: ScreenProps) => {
         <View style={styles.dateChip}>
           <Text style={styles.date}>{formateDate(date)}</Text>
         </View>
-        <FlatList
-          data={arr}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => `@${index}`}
-          renderItem={({item}: any) => {
-            // console.log('item--------------', item);
-            return (
-              <View style={styles.card}>
-                <View style={styles.nameBox}>
-                  <Text style={styles.txt}>{item?.name}</Text>
-                  <Text style={{}}>{item?.type}</Text>
+        {isLoaderStart ? (
+          <View style={styles.emptyCont}>
+            <AppLoader visible={isLoaderStart} />
+          </View>
+        ) : cityRate?.length == 0 && !isLoaderStart ? (
+          <View style={styles.emptyCont}>
+            <Text style={styles.emptyTxt}>No Rate List found!</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={cityRate}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => `@${index}`}
+            renderItem={({item}: any) => {
+              return (
+                <View style={styles.card}>
+                  <View style={styles.nameBox}>
+                    <Text style={styles.txt}>{item?.crop_name}</Text>
+                    <Text style={{}}>{item?.crop_type_name}</Text>
+                  </View>
+                  <View style={styles.priceBox}>
+                    <Text style={styles.txt}>Minimum</Text>
+                    <Text style={{}}>{item?.min_price}</Text>
+                  </View>
+                  <View style={styles.priceBox2}>
+                    <Text style={styles.txt}>Maximum</Text>
+                    <Text style={{}}>{item?.max_price}</Text>
+                  </View>
                 </View>
-                <View style={styles.priceBox}>
-                  <Text style={styles.txt}>Minimum</Text>
-                  <Text style={{}}>{item?.min}</Text>
-                </View>
-                <View style={styles.priceBox2}>
-                  <Text style={styles.txt}>Maximum</Text>
-                  <Text style={{}}>{item?.max}</Text>
-                </View>
-              </View>
-            );
-          }}
-        />
+              );
+            }}
+          />
+        )}
       </View>
     </ImageBackground>
   );
@@ -122,5 +147,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     // opacity: 0.5,
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
+  },
+  emptyTxt: {
+    fontSize: normalized(14),
+    fontWeight: '400',
+    color: AppColors.black.black,
   },
 });

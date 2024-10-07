@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {AppColors, AppFonts, normalized} from './AppConstants';
+import {AppColors, AppFonts, hv, normalized} from './AppConstants';
 export const AppHorizontalMargin = normalized(15);
 
 export const AppStyles = StyleSheet.create({

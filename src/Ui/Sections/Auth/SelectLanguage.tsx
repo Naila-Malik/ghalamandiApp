@@ -57,19 +57,19 @@ const SelectLanguage = (props: ScreenProps) => {
             rightImage={selected === 'Urdu' ? AppImages.Common.tick : ''}
           />
         </View>
-        <RoundButton
-          title="Save Changes"
-          onPress={() => props.navigation.navigate(Routes.Auth.login)}
-          containerStyle={{
-            backgroundColor: AppColors.green.dark,
-            marginBottom: hv(10),
-            alignItems: 'center',
-          }}
-          titleStyle={{
-            color: AppColors.white.white,
-          }}
-        />
       </View>
+      <RoundButton
+        title="Save Changes"
+        onPress={() => props.navigation.navigate(Routes.Auth.login)}
+        containerStyle={{
+          backgroundColor: AppColors.green.dark,
+          marginBottom: hv(10),
+          alignItems: 'center',
+        }}
+        titleStyle={{
+          color: AppColors.white.white,
+        }}
+      />
     </View>
   );
 };
@@ -83,5 +83,9 @@ const styles = StyleSheet.create({
   btmCon: {
     justifyContent: 'space-between',
     flex: 1,
+  },
+  btn: {
+    width: '48%',
+    backgroundColor: AppColors.white.white,
   },
 });

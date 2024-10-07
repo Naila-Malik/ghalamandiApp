@@ -1,54 +1,119 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TouchableWithoutFeedback,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import {AppColors, hv, normalized} from '../../../Utils/AppConstants';
-import RoundInput from '../CustomInput/RoundInput';
 import RoundButton from '../Button/RoundButton';
+import RoundInput from '../CustomInput/RoundInput';
+
+const {height} = Dimensions.get('window');
 
 interface Props {
   onPress?: () => void;
   amount?: number;
   setAmount?: (amount: number) => void;
+  visible: boolean; // New prop to control the visibility
+  onClose: () => void; // New prop to handle closing
 }
 
-const BottomSheet = (props: Props) => {
+const BottomSheet = ({amount, setAmount, onPress, visible, onClose}: Props) => {
+  const translateY = useRef(new Animated.Value(height)).current; // Initial position off-screen
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(translateY, {
+        toValue: 0, // Slide up to visible
+        duration: 300,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(translateY, {
+        toValue: height, // Slide down to hidden
+        duration: 300,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
+  if (!visible) return null;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.TxtBox}>
-        <Text style={styles.txt}>Place Bid</Text>
-        <Text style={styles.txt1}>
-          Please enter your bid amount to participate into the deal.
-        </Text>
-        <Text style={styles.txt1}>Bid Amount</Text>
-      </View>
-      <RoundInput
-        value={props?.amount}
-        placeholder="2500"
-        onChangeText={text => props?.setAmount && props.setAmount(Number(text))}
-      />
-      <RoundButton
-        title="Submit Bid"
-        onPress={props?.onPress}
-        containerStyle={styles.btn}
-        titleStyle={styles.txtBtn}
-      />
+    <View style={styles.overlay}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <Animated.View style={[styles.dimBackground]} />
+      </TouchableWithoutFeedback>
+      <Animated.View style={[styles.bottomSheet, {transform: [{translateY}]}]}>
+        <View style={styles.TxtBox}>
+          <Text style={styles.txt}>Place Bid</Text>
+          <Text style={styles.txt1}>
+            Please enter your bid amount to participate in the deal.
+          </Text>
+          <Text style={styles.txt1}>Bid Amount</Text>
+        </View>
+        <TouchableWithoutFeedback onPress={onPress}>
+          <>
+            <RoundInput
+              value={amount}
+              placeholder="2500"
+              onChangeText={text => setAmount && setAmount(Number(text))}
+            />
+            <RoundButton
+              title="Submit Bid"
+              onPress={onPress}
+              containerStyle={styles.button}
+              titleStyle={styles.buttonText}
+            />
+          </>
+        </TouchableWithoutFeedback>
+      </Animated.View>
     </View>
   );
 };
 
-export default BottomSheet;
-
 const styles = StyleSheet.create({
-  container: {
-    // height: hv(150),
-    width: '100%',
-    // backgroundColor: 'yellow',
-    backgroundColor: AppColors.grey.grey,
-    bottom: 0,
+  overlay: {
     position: 'absolute',
-    borderTopLeftRadius: normalized(30),
-    borderTopRightRadius: normalized(30),
-    paddingHorizontal: normalized(10),
-    paddingVertical: hv(20),
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+  },
+  dimBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  bottomSheet: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: height * 0.5, // Modal height
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+
+  button: {
+    backgroundColor: AppColors.green.dark,
+    marginVertical: hv(20),
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
   },
   txt: {
     fontSize: normalized(16),
@@ -62,16 +127,8 @@ const styles = StyleSheet.create({
     lineHeight: normalized(30),
   },
   TxtBox: {
-    // flexDirection: 'row',
     justifyContent: 'space-between',
-    // alignItems: 'center',
-  },
-  btn: {
-    backgroundColor: AppColors.green.dark,
-    marginVertical: hv(20),
-    alignItems: 'center',
-  },
-  txtBtn: {
-    color: AppColors.white.white,
   },
 });
+
+export default BottomSheet;

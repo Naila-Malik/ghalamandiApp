@@ -44,14 +44,14 @@ const SalePurchaseScreen = (props: ScreenProps) => {
   const dispatch = useDispatch();
 
   const fetchCropApi = async () => {
-    // dispatch(setLoader(true));
+    dispatch(setLoader(true));
     try {
       let response: any = await getAllCrops(isNetConnected);
       response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
       console.log('error------> ', e);
     } finally {
-      // dispatch(setLoader(false));
+      dispatch(setLoader(false));
     }
   };
 
@@ -59,6 +59,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
     dispatch(setLoader(true));
     try {
       let response: any = await getAllPro(isNetConnected);
+
       setArr(response.data);
     } catch (e) {
       console.log('error------> ', e);
@@ -79,7 +80,6 @@ const SalePurchaseScreen = (props: ScreenProps) => {
     try {
       let response: any = await getProByCrop(isNetConnected, selectedCate);
       setArr(response.data);
-      // response?.success ? setproductsCate(response?.data) : [];
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -138,12 +138,10 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={(item, index) => `@${index}`}
                   renderItem={({item}: any) => {
-                    // console.log('item--------------', item);
                     return (
                       <View>
                         <TouchableOpacity
                           onPress={() => {
-                            // props.navigation.navigate(item.nav),
                             setSelectedCate(item?.id);
                           }}>
                           <View style={styles.menuBox}>
@@ -242,9 +240,6 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                       </TouchableOpacity>
                     );
                   }}
-                  // ListFooterComponent={
-                  //   <View style={{height: hv(10), backgroundColor: 'yellow'}} />
-                  // }
                 />
               )}
             </View>
@@ -262,8 +257,9 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.bgColor,
     ...AppStyles.horiCommon,
     marginHorizontal: normalized(10),
-    // paddingTop: 10,
+    paddingTop: 10,
     height: 90,
+    paddingRight: normalized(50),
   },
   HeadCon: {
     flexDirection: 'row',

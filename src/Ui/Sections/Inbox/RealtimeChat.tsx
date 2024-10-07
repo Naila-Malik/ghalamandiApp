@@ -62,7 +62,7 @@ const RealtimeChat = (props: ScreenProps) => {
           </View>
         ) : (
           <FlatList
-            data={Arr}
+            data={[]}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => `@${index}`}
             renderItem={({item}: any) => {

@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
 import {
@@ -10,48 +10,37 @@ import {
 } from '../../../Utils/AppConstants';
 import CustomSearchBar from '../../Components/CustomSearchBar/CustomSearchBar';
 import {Routes} from '../../../Utils/Routes';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import {CitiesList} from '../../../Utils/helper';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const CityList = (props: ScreenProps) => {
-  const [cityCode, setCityCode] = useState(0);
   const [searchValue, setSearchValue] = useState();
-  const cities = [
-    {
-      country: 'PK',
-      name: 'Abbottabad',
-      lat: '34.1463',
-      lng: '73.21168',
-      code: 0,
-    },
-    {
-      country: 'PK',
-      name: 'Adilpur',
-      lat: '27.93677',
-      lng: '69.31941',
-      code: 1,
-    },
-    {
-      country: 'PK',
-      name: 'Ahmadpur East',
-      lat: '29.14269',
-      lng: '71.25771',
-      code: 2,
-    },
-    {
-      country: 'PK',
-      name: 'Ahmadpur Sial',
-      lat: '30.67791',
-      lng: '71.74344',
-      code: 3,
-    },
-    {
-      country: 'PK',
-      name: 'Akora',
-      lat: '34.00337',
-      lng: '72.12561',
-      code: 4,
-    },
-  ];
+  const [cities, setCities] = useState([]);
+  const dispatch = useDispatch();
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
 
+  const fetchCities = async () => {
+    dispatch(setLoader(true));
+    try {
+      const citiesData = await CitiesList();
+      if (citiesData) {
+        setCities(citiesData);
+      }
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchCities();
+  }, []);
   return (
     <View style={AppStyles.MainStyle}>
       <AppHeader
@@ -65,25 +54,34 @@ const CityList = (props: ScreenProps) => {
         onChangeText={(t: any) => setSearchValue(t)}
       />
       <View style={{marginVertical: hv(10)}} />
-      <FlatList
-        data={cities}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => `@${index}`}
-        renderItem={({item}: any) => {
-          // console.log('item--------------', item);
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                props.navigation.navigate(Routes.MyShop.MyShopHome, {
-                  name: item?.name,
-                }),
-                  setCityCode(item?.code);
-              }}>
-              <Text style={styles.txt}>{item?.name}</Text>
-            </TouchableOpacity>
-          );
-        }}
-      />
+      {isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      ) : cities?.length == 0 && !isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <Text style={styles.emptyTxt}>No City found!</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={cities}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => `@${index}`}
+          renderItem={({item}: any) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate(Routes.MyShop.MyShopHome, {
+                    name: item?.name,
+                    id: item?.id,
+                  });
+                }}>
+                <Text style={styles.txt}>{item?.name}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -97,5 +95,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: normalized(10),
     marginVertical: hv(10),
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
+  },
+  emptyTxt: {
+    fontSize: normalized(14),
+    fontWeight: '400',
+    color: AppColors.black.black,
   },
 });

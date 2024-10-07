@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   ImageBackground,
   ScrollView,
@@ -22,22 +23,26 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import RoundInput from '../../Components/CustomInput/RoundInput';
 import {AppRootStore} from '../../../Redux/store/AppStore';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {MyNewShopRequest} from '../../../Network/Services/CommissionShops';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import AppLoader from '../../Components/Loader/AppLoader';
+import {Routes} from '../../../Utils/Routes';
 
 const MyShopScreen = (props: ScreenProps) => {
   const [bgImage, setBgImage] = useState();
   const [iconImage, setIconImage] = useState();
+  const {name, id} = props?.route?.params;
   const {isNetConnected, isLoaderStart} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
-  // console.log('bgImage-------', bgImage);
+  const dispatch = useDispatch();
 
   const {
     control,
     handleSubmit,
     formState: {errors},
   } = useForm({
-    // resolver: zodResolver(validationGoalSchema),
     defaultValues: {
       bgImage: '',
       iconImage: '',
@@ -51,29 +56,33 @@ const MyShopScreen = (props: ScreenProps) => {
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
     let body = {
-      bgImage: '',
-      iconImage: '',
-      name: '',
-      address: '',
-      about: '',
-      shopNo: 0,
-      PNumber: 0,
+      bg_image: data?.bgImage,
+      avatar: data?.iconImage,
+      shop_name: data?.name,
+      shop_address: data?.address,
+      about: data?.about,
+      shop_no: data?.shopNo,
+      mobile_no: data?.PNumber,
+      city: id,
+      buy_crops: ['6', '7'],
+      whatsapp_no: data?.PNumber,
     };
-    // try {
-    //   dispatch(setLoader(true));
-    //   let response: any = await addStoreRequest(isNetConnected, body);
-    //   console.log('respose-----------', response);
-    //   if (response?.success) {
-    //     props.navigation.navigate(Routes.Products.SalePurchase);
-    //   } else {
-    //     console.log('i am in else case');
-    //     // dispatch(setIsAlertShow({value: true, message: response?.message}));
-    //   }
-    // } catch (e) {
-    //   console.log('error in add store ', e);
-    // } finally {
-    //   dispatch(setLoader(false));
-    // }
+    try {
+      // console.log('body================', body);
+      dispatch(setLoader(true));
+      let response: any = await MyNewShopRequest(isNetConnected, body);
+      // console.log('respose-----------', response);
+      if (response?.success) {
+        Alert.alert(`${response?.message}`);
+        props?.navigation.navigate(Routes.home.homePage);
+      } else {
+        Alert.alert(`${response?.message}`);
+      }
+    } catch (e) {
+      console.log('error in create shop ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
   };
 
   return (
@@ -124,87 +133,95 @@ const MyShopScreen = (props: ScreenProps) => {
             />
           </TouchableOpacity>
         </View>
-        <Controller
-          control={control}
-          name="name"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Shop Name</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Shop Name"
-                value={value}
-                leftIcon={AppImages.Settings.PersonIcon}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="address"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Address</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Address"
-                value={value}
-                leftIcon={AppImages.Settings.AddressIcon}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="about"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>About</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="About"
-                value={value}
-                leftIcon={AppImages.Settings.notifiIcon}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="shopNo"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Shop #</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Shop #"
-                value={value}
-                leftIcon={AppImages.Settings.StaticsIcon}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="PNumber"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Mobile #</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Mobile #"
-                value={value}
-                leftIcon={AppImages.Common.phoneIcon}
-              />
-            </>
-          )}
-        />
-        <RoundButton
-          title="Purchase Rates"
-          onPress={handleSubmit(onSubmit)}
-          containerStyle={styles.Btn}
-          titleStyle={{color: AppColors.white.white}}
-        />
+        {isLoaderStart ? (
+          <View style={styles.emptyCont}>
+            <AppLoader visible={isLoaderStart} />
+          </View>
+        ) : (
+          <>
+            <Controller
+              control={control}
+              name="name"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Shop Name</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Shop Name"
+                    value={value}
+                    leftIcon={AppImages.Settings.PersonIcon}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Address</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Address"
+                    value={value}
+                    leftIcon={AppImages.Settings.AddressIcon}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="about"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>About</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="About"
+                    value={value}
+                    leftIcon={AppImages.Settings.notifiIcon}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="shopNo"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Shop #</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Shop #"
+                    value={value}
+                    leftIcon={AppImages.Settings.StaticsIcon}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="PNumber"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Mobile #</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Mobile #"
+                    value={value}
+                    leftIcon={AppImages.Common.phoneIcon}
+                  />
+                </>
+              )}
+            />
+            <RoundButton
+              title="Save"
+              onPress={handleSubmit(onSubmit)}
+              containerStyle={styles.Btn}
+              titleStyle={{color: AppColors.white.white}}
+            />
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -214,9 +231,7 @@ export default MyShopScreen;
 
 const styles = StyleSheet.create({
   card: {
-    // backgroundColor: AppColors.white.white,
     borderRadius: normalized(20),
-    // flex: 1,
     paddingHorizontal: normalized(10),
     height: hv(170),
   },
@@ -226,7 +241,6 @@ const styles = StyleSheet.create({
     height: hv(170),
     alignSelf: 'center',
     marginVertical: hv(10),
-    // backgroundColor: AppColors.grey.greyLighter,
     opacity: normalized(0.5),
   },
   imgLogo: {
@@ -260,7 +274,6 @@ const styles = StyleSheet.create({
     fontSize: normalized(16),
     color: AppColors.grey.grey,
     fontWeight: 'bold',
-    // textAlign: 'center',
     marginTop: hv(140),
     marginLeft: normalized(70),
   },
@@ -269,5 +282,10 @@ const styles = StyleSheet.create({
     color: AppColors.black.black,
     marginVertical: hv(10),
     fontWeight: '500',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
   },
 });

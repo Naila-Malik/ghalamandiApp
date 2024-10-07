@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   AppColors,
   AppImages,
@@ -18,30 +18,35 @@ import {
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
 import {Routes} from '../../../Utils/Routes';
+import {useSelector, useDispatch} from 'react-redux';
+import {getAllCShops} from '../../../Network/Services/CommissionShops';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const CommissionShopsScreen = (props: ScreenProps) => {
-  const arr = [
-    {
-      id: 1,
-      nameShop: 'Hajra Organic',
-      image: '',
-      descriptionTxt:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
-      distance: '3.2 Km',
-      address: 'Lahore City',
-      PNumber: 923054569484,
-    },
-    {
-      id: 2,
-      nameShop: 'Jameel Maqsood',
-      image: '',
-      descriptionTxt:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has ',
-      distance: '3.2 Km',
-      address: 'Lahore Cant',
-      PNumber: 923054569484,
-    },
-  ];
+  const [Arr, setArr] = useState([]);
+  const {isNetConnected, isLoaderStart, userData} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
+  const dispatch = useDispatch();
+
+  const fetchAlCommissionShops = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getAllCShops(isNetConnected);
+      setArr(response.data);
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchAlCommissionShops();
+  }, []);
+
   return (
     <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
       <AppHeader
@@ -49,102 +54,110 @@ const CommissionShopsScreen = (props: ScreenProps) => {
         leftIcon
         onLeftIconPress={() => props?.navigation?.goBack()}
       />
-      <FlatList
-        data={arr}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) => `@${index}`}
-        contentContainerStyle={styles.cardContainer}
-        renderItem={({item}: any) => {
-          return (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => {
-                props?.navigation.navigate(Routes.CShop.CShopDetail, {
-                  item: item,
-                });
-              }}>
-              <View style={styles.iconContainer}>
-                <Image
-                  source={
-                    (item?.images ?? []).length > 0
-                      ? item?.images
-                      : AppImages.Common.placeholderImg
-                  }
-                  style={styles.bgImg}
-                />
-                <Text style={[styles.txt, {marginLeft: normalized(10)}]}>
-                  {item?.nameShop}
-                </Text>
-                <Image
-                  source={AppImages.Common.menuIcon}
-                  style={styles.menuIcon}
-                />
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginVertical: hv(10),
+      {isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      ) : Arr?.length == 0 && !isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <Text style={styles.emptyTxt}>No Shop found!</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={Arr}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => `@${index}`}
+          contentContainerStyle={styles.cardContainer}
+          renderItem={({item}: any) => {
+            // console.log('befor adaadaa==========', item);
+            return (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => {
+                  props?.navigation.navigate(Routes.CShop.CShopDetail, {
+                    item: item,
+                  });
                 }}>
-                <Text style={[styles.txt2, {textAlign: 'justify', flex: 1}]}>
-                  {item?.descriptionTxt}
-                </Text>
+                <View style={styles.iconContainer}>
+                  <Image
+                    source={
+                      (item?.images ?? []).length > 0
+                        ? item?.images
+                        : AppImages.Common.placeholderImg
+                    }
+                    style={styles.bgImg}
+                  />
+                  <Text style={[styles.txt, {marginLeft: normalized(10)}]}>
+                    {item?.shop_name}
+                  </Text>
+                  <Image
+                    source={AppImages.Common.menuIcon}
+                    style={styles.menuIcon}
+                  />
+                </View>
                 <View
                   style={{
                     flexDirection: 'row',
-                    width: normalized(70),
-                    marginHorizontal: normalized(10),
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginVertical: hv(10),
                   }}>
-                  <Image
-                    source={AppImages.ProductCate.location}
-                    style={styles.icon}
-                  />
-                  <Text numberOfLines={1}>{item?.distance}</Text>
-                </View>
-              </View>
-              <View
-                style={[
-                  AppStyles.horiCommon,
-                  {justifyContent: 'space-between'},
-                ]}>
-                <View style={styles.btm}>
-                  <Image
-                    source={AppImages.Settings.CityIcon}
-                    style={[styles.icon, {tintColor: AppColors.black.black}]}
-                  />
-                  <Text style={[styles.txt2, {marginLeft: normalized(10)}]}>
-                    {item?.address}
+                  <Text style={[styles.txt2, {textAlign: 'justify', flex: 1}]}>
+                    {item?.about}
                   </Text>
-                </View>
-                <View style={styles.btm}>
-                  <TouchableOpacity
-                    onPress={() => Linking.openURL(`tel:${item.PNumber}`)}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: normalized(70),
+                      marginHorizontal: normalized(10),
+                    }}>
                     <Image
-                      source={AppImages.Common.phoneIcon}
-                      style={styles.icon1}
+                      source={AppImages.ProductCate.location}
+                      style={styles.icon}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() =>
-                      Linking.openURL(
-                        `whatsapp://send?text=Hello!I got your number from GhalaMandi App&phone=${item?.PNumber}`,
-                      )
-                    }>
-                    <Image
-                      source={AppImages.Home.whatsApp}
-                      style={[styles.icon, {tintColor: AppColors.green.dark}]}
-                    />
-                  </TouchableOpacity>
+                    <Text numberOfLines={1}>{item?.distance}</Text>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-        // ListFooterComponent={
-        //   <View style={{height: hv(10), backgroundColor: 'yellow'}} />
-        // }
-      />
+                <View
+                  style={[
+                    AppStyles.horiCommon,
+                    {justifyContent: 'space-between'},
+                  ]}>
+                  <View style={styles.btm}>
+                    <Image
+                      source={AppImages.Settings.CityIcon}
+                      style={[styles.icon, {tintColor: AppColors.black.black}]}
+                    />
+                    <Text style={[styles.txt2, {marginLeft: normalized(10)}]}>
+                      {item?.address}
+                    </Text>
+                  </View>
+                  <View style={styles.btm}>
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(`tel:${item.mobile_no}`)}>
+                      <Image
+                        source={AppImages.Common.phoneIcon}
+                        style={styles.icon1}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        Linking.openURL(
+                          `whatsapp://send?text=Hello!I got your number from GhalaMandi App&phone=${item?.whatsapp_no}`,
+                        )
+                      }>
+                      <Image
+                        source={AppImages.Home.whatsApp}
+                        style={[styles.icon, {tintColor: AppColors.green.dark}]}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -215,5 +228,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: normalized(10),
     alignItems: 'center',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
+  },
+  emptyTxt: {
+    fontSize: normalized(14),
+    fontWeight: '400',
+    color: AppColors.black.black,
   },
 });

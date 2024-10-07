@@ -5,41 +5,29 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
-import {AppStyles} from '../../../Utils/AppStyles';
 import {
   AppColors,
   AppImages,
   ScreenProps,
   hv,
   normalized,
-  webClientIdSingin,
 } from '../../../Utils/AppConstants';
-import RoundButton from '../../Components/Button/RoundButton';
-import {Routes} from '../../../Utils/Routes';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  setAlertObj,
-  setLoader,
-  setUserData,
-} from '../../../Redux/reducers/AppReducer';
-import CommonDataManager from '../../../Utils/CommonManager';
-import {loginRequest} from '../../../Network/Services/HomeApis';
-import {ApiResponseHandler} from '../../../Network/ApiResponseHandler';
-import {AppStrings} from '../../../Utils/Strings';
-import AppLoader from '../../Components/Loader/AppLoader';
-import {AppRootStore} from '../../../Redux/store/AppStore';
 import {useForm, SubmitHandler, Controller} from 'react-hook-form';
+import {useSelector, useDispatch} from 'react-redux';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import {AppStyles} from '../../../Utils/AppStyles';
+import RoundButton from '../../Components/Button/RoundButton';
 import RoundInput from '../../Components/CustomInput/RoundInput';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import AppLoader from '../../Components/Loader/AppLoader';
+import {signUpRequest} from '../../../Network/Services/HomeApis';
+import {setLoader, setUserData} from '../../../Redux/reducers/AppReducer';
+import CommonDataManager from '../../../Utils/CommonManager';
 
-const LoginScreen = (props: ScreenProps) => {
+const SignUpScreen = (props: ScreenProps) => {
   const {isLoaderStart, isNetConnected} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
@@ -52,21 +40,25 @@ const LoginScreen = (props: ScreenProps) => {
   } = useForm({
     defaultValues: {
       email: '',
+      name: '',
       password: '',
+      confirmPassword: '',
     },
   });
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
     let body = {
       email: data?.email,
+      name: data?.name,
       password: data?.password,
+      password_confirmation: data?.confirmPassword,
     };
     try {
       dispatch(setLoader(true));
-      let response: any = await loginRequest(isNetConnected, body);
+      let response: any = await signUpRequest(isNetConnected, body);
       if (response?.status) {
         await CommonDataManager.getSharedInstance().saveUserData(
-          response?.user,
+          response?.data,
         );
         await CommonDataManager.getSharedInstance().saveUserToken(
           response?.token,
@@ -82,21 +74,22 @@ const LoginScreen = (props: ScreenProps) => {
       dispatch(setLoader(false));
     }
   };
-
   return (
-    <View style={[AppStyles.MainStyle, {paddingHorizontal: normalized(10)}]}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={[AppStyles.centeredCommon, {marginTop: hv(10)}]}>
-          <Image
-            source={AppImages.Common.LogoImage}
-            resizeMode="contain"
-            style={styles.icon}
-          />
-        </View>
-        <Text style={styles.title}>Login</Text>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={[AppStyles.MainStyle, {paddingHorizontal: normalized(10)}]}>
+      <View style={AppStyles.centeredCommon}>
+        <Image
+          source={AppImages.Common.LogoImage}
+          resizeMode="contain"
+          style={styles.icon}
+        />
+      </View>
+      <Text style={styles.title}>Sign Up</Text>
 
-        {!isLoaderStart ? (
-          <KeyboardAvoidingView style={styles.body}>
+      {!isLoaderStart ? (
+        <KeyboardAvoidingView style={styles.body}>
+          <View>
             <Controller
               control={control}
               name="email"
@@ -106,6 +99,20 @@ const LoginScreen = (props: ScreenProps) => {
                   <RoundInput
                     onChangeText={t => onChange(t)}
                     placeholder="email@example.com"
+                    value={value}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="name"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>User Name</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="John Doe"
                     value={value}
                   />
                 </>
@@ -126,54 +133,48 @@ const LoginScreen = (props: ScreenProps) => {
                 </>
               )}
             />
-            <TouchableOpacity onPress={() => {}}>
-              <Text style={[styles.txt, {alignSelf: 'flex-end'}]}>
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
-            <RoundButton
-              title="Login"
-              onPress={handleSubmit(onSubmit)}
-              containerStyle={styles.btnStyle}
-              titleStyle={{
-                color: AppColors.white.white,
-              }}
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Confirm Password</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder=" *********"
+                    value={value}
+                    isPassword
+                  />
+                </>
+              )}
             />
-            <TouchableOpacity
-              onPress={() => {
-                props?.navigation.navigate(Routes?.Auth?.signUp);
-              }}>
-              <Text
-                style={[
-                  styles.txt,
-                  {
-                    alignSelf: 'center',
-                    fontStyle: 'italic',
-                    textDecorationLine: 'underline',
-                    color: 'blue',
-                  },
-                ]}>
-                Do not have an account?{' '}
-                <Text style={styles.signup}>Signup</Text>
-              </Text>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        ) : (
-          <View style={styles.emptyCont}>
-            <AppLoader visible={isLoaderStart} />
           </View>
-        )}
-      </ScrollView>
-    </View>
+
+          <RoundButton
+            title="Sign Up"
+            onPress={handleSubmit(onSubmit)}
+            containerStyle={styles.btnStyle}
+            titleStyle={{
+              color: AppColors.white.white,
+            }}
+          />
+        </KeyboardAvoidingView>
+      ) : (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      )}
+    </ScrollView>
   );
 };
 
-export default LoginScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
   body: {
     flex: 1,
     marginTop: hv(30),
+    justifyContent: 'space-between',
   },
   icon: {
     height: 100,
@@ -201,12 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.green.dark,
     margin: hv(10),
     alignItems: 'center',
-    marginTop: hv(100),
-  },
-  signup: {
-    fontSize: normalized(18),
-    fontWeight: '600',
-    color: 'blue',
-    marginVertical: hv(10),
+    marginVertical: hv(50),
   },
 });

@@ -23,6 +23,7 @@ import {formateDate} from '../../../Utils/helper';
 import {Table, Row, Rows} from 'react-native-table-component';
 import AppLoader from '../../Components/Loader/AppLoader';
 import {AppRootStore} from '../../../Redux/store/AppStore';
+import {getCropRate} from '../../../Network/Services/MandiRates';
 
 export default function TodaysMandiRtaes(props: ScreenProps) {
   const [productsCate, setproductsCate] = useState([]);
@@ -32,16 +33,30 @@ export default function TodaysMandiRtaes(props: ScreenProps) {
   const dispatch = useDispatch();
   const date = useMemo(() => new Date(), []);
   const tableHead = ['City', 'Minimum', 'Maximum', 'Trend'];
-  const tableData = [
-    ['Depalpur', '3450', '3450', '4'],
-    ['Okara', '3450', '3450', 'd'],
-    ['Okara', '3450', '3450', 'd'],
-  ];
+  const [tableData, setTableData] = useState([]);
+
   const fetchCropApi = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getAllCrops(selector.isNetConnected);
+      let response: any = await getAllCrops(isNetConnected);
       response?.success ? setproductsCate(response?.data) : setproductsCate([]);
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  const fetchRates = async (id: number) => {
+    const body = {
+      crop_id: id,
+    };
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getCropRate(isNetConnected, body);
+      if (response.success) {
+        await setTableData(response?.data);
+      }
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -81,12 +96,10 @@ export default function TodaysMandiRtaes(props: ScreenProps) {
                 <View>
                   <TouchableOpacity
                     onPress={() => {
-                      // props.navigation.navigate(item.nav),
-                      // setSelectedCate(item?.id);
+                      fetchRates(item?.id);
                     }}>
                     <View style={styles.menuBox}>
                       <Image
-                        // source={{uri: item?.avatar}}
                         source={{
                           uri: item?.avatar
                             ? item?.avatar
@@ -172,7 +185,6 @@ const styles = StyleSheet.create({
   emptyCont: {
     justifyContent: 'center',
     alignItems: 'center',
-    // marginVertical: normalized(150),
   },
   emptyTxt: {
     fontSize: normalized(14),

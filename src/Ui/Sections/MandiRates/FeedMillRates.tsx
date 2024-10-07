@@ -1,22 +1,40 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
-import {
-  AppColors,
-  ScreenProps,
-  ScreenSize,
-  hv,
-} from '../../../Utils/AppConstants';
+import {AppColors, ScreenProps} from '../../../Utils/AppConstants';
 import {Table, Row, Rows} from 'react-native-table-component';
+import {useDispatch, useSelector} from 'react-redux';
+import {getFeedMillRates} from '../../../Network/Services/MandiRates';
+import {setLoader} from '../../../Redux/reducers/AppReducer';
+import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const FeedMillRates = (props: ScreenProps) => {
-  const tableHead = ['City', 'Minimum', 'Maximum', 'Trend'];
-  const tableData = [
-    ['Depalpur', '3450', '3450', '4'],
-    ['Okara', '3450', '3450', 'd'],
-    ['Okara', '3450', '3450', 'd'],
-  ];
+  const {isNetConnected} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
+  const tableHead = ['Name', 'Date', 'Rate'];
+  const [tableData, setTableData] = useState([]);
+  const dispatch = useDispatch();
+
+  const fetchFeedMillRates = async () => {
+    dispatch(setLoader(true));
+    try {
+      let response: any = await getFeedMillRates(isNetConnected);
+      if (response.success) {
+        await setTableData(response?.data);
+      }
+    } catch (e) {
+      console.log('error------> ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+
+  useEffect(() => {
+    fetchFeedMillRates();
+  }, []);
+
   return (
     <View style={AppStyles.MainStyle}>
       <AppHeader

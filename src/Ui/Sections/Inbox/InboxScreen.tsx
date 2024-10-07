@@ -22,7 +22,7 @@ import {setLoader} from '../../../Redux/reducers/AppReducer';
 import {Routes} from '../../../Utils/Routes';
 import RoundButton from '../../Components/Button/RoundButton';
 import AppLoader from '../../Components/Loader/AppLoader';
-import {formateDate} from '../../../Utils/helper';
+import {formatTime, formateDate} from '../../../Utils/helper';
 import {AppRootStore} from '../../../Redux/store/AppStore';
 
 const InboxScreen = (props: ScreenProps) => {
@@ -31,28 +31,28 @@ const InboxScreen = (props: ScreenProps) => {
     (state: AppRootStore) => state.AppReducer,
   );
   const dispatch = useDispatch();
-  // const [Arr, setArr] = useState([]);
-  const Arr = [
-    {
-      name: 'Maher Munir Sb',
-      price: 480,
-      quantity: 4.5,
-      packingType: 'bori',
-      date: new Date(),
-      crop: 'Potato',
-      bids: 0,
-      dealType: 'Open',
-      image: '',
-      PNumber: 923366422267,
-    },
-  ];
+  const [Arr, setArr] = useState([]);
+  // const Arr = [
+  //   {
+  //     name: 'Maher Munir Sb',
+  //     price: 480,
+  //     quantity: 4.5,
+  //     packingType: 'bori',
+  //     date: new Date(),
+  //     crop: 'Potato',
+  //     bids: 0,
+  //     dealType: 'Open',
+  //     image: '',
+  //     PNumber: 923366422267,
+  //   },
+  // ];
 
   const fetchMyDeals = async () => {
     try {
       dispatch(setLoader(true));
       let response: any = await getMyDeals(isNetConnected);
-      console.log('response-------my-------', response);
-      // setArr(response.data);
+      // console.log('response-------my-------', response);
+      setArr(response.data);
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -64,8 +64,8 @@ const InboxScreen = (props: ScreenProps) => {
     try {
       dispatch(setLoader(true));
       let response: any = await getUserDeals(isNetConnected);
-      console.log('response--------user------', response.data);
-      // setArr(response.data);
+      // console.log('response--------user------', response);
+      setArr(response.data);
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -129,7 +129,7 @@ const InboxScreen = (props: ScreenProps) => {
           </View>
         ) : Arr?.length == 0 && !isLoaderStart ? (
           <View style={styles.emptyCont}>
-            <Text style={styles.emptyTxt}>No Product found!</Text>
+            <Text style={styles.emptyTxt}>No Bid found!</Text>
           </View>
         ) : (
           <FlatList
@@ -154,18 +154,26 @@ const InboxScreen = (props: ScreenProps) => {
                     style={styles.bgImg}
                   />
                   <View style={styles.bodyHorizontal}>
-                    <Text style={styles.txt}>{item.name}</Text>
+                    <Text style={styles.txt}>{item?.user_name}</Text>
                     <Text style={styles.txt2}>
-                      R.s {item.quantity} k/ {item.price} {item.packingType}
+                      R.s {item?.sales?.price} k/ {item?.sales?.total_qty}{' '}
+                      {item?.sales?.packing}
                     </Text>
                     <Text style={styles.txt2}>
-                      {item.crop} - Bids : {item.bids}
+                      {item?.crop_name} - Bids : {item?.bids}
                     </Text>
                   </View>
                   <View style={styles.bodyHorizontal1}>
-                    <Text style={styles.txt2}>02 : 55 AM</Text>
-                    <Text style={styles.txt2}>{formateDate(item.date)}</Text>
-                    <Text style={styles.txt2}>Deal : {item.dealType}</Text>
+                    <Text style={styles.txt2}>
+                      {' '}
+                      {formatTime(item?.created_at)}
+                    </Text>
+                    <Text style={styles.txt2}>
+                      {formateDate(item?.created_at)}
+                    </Text>
+                    <Text style={styles.txt2}>
+                      Deal : {item?.status === 1 ? 'Open' : 'Close'}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -234,6 +242,6 @@ const styles = StyleSheet.create({
     marginStart: normalized(10),
   },
   bodyHorizontal1: {
-    width: normalized(80),
+    width: normalized(100),
   },
 });

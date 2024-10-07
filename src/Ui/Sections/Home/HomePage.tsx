@@ -40,12 +40,17 @@ const HomePage = (props: ScreenProps) => {
   const fetchWheatherApi = async () => {
     try {
       let response: any = await getWheatherReq(isNetConnected);
-      setDegree(`${kelvinToCelsius(response.list[0].main.temp)}°C`);
+      // setDegree(`${kelvinToCelsius(response.list[0].main.temp)}°C`);
+      setDegree(`${response?.data?.current?.temp_c}°C`);
       return {
-        wind: response.list[0].wind.speed,
-        humidity: response.list[0].main.humidity,
-        rain: `${(response.list[0]?.pop * 100).toFixed(0)}%`,
-        cloud: response.list[0].clouds.all,
+        wind: response?.data?.current?.wind_kph,
+        humidity: response?.data?.current?.humidity,
+        rain: response?.data?.current?.precip_in,
+        cloud: response?.data?.current?.cloud,
+        // wind: response.list[0].wind.speed,
+        // humidity: response.list[0].main.humidity,
+        // rain: `${(response.list[0]?.pop * 100).toFixed(0)}%`,
+        // cloud: response.list[0].clouds.all,
       };
     } catch (e) {
       console.log('error------> ', e);

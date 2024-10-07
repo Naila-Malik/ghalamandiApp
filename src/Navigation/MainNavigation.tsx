@@ -41,8 +41,7 @@ const AppStack = () => {
   );
 };
 const AppContainer = () => {
-  const selector = useSelector((AppState: AppRootStore) => AppState);
-  const {safeArea, userData} = selector.AppReducer;
+  const {userData} = useSelector((state: AppRootStore) => state.AppReducer);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -80,6 +79,7 @@ const AppContainer = () => {
   // }, [selector.AppReducer]);
 
   // console.log('user data--------------', userData);
+  // console.log('user data--------------', selector);
   return (
     <NavigationContainer ref={navigationRef}>
       {/* <StatusBar

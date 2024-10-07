@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {
   AppColors,
@@ -18,6 +18,7 @@ import FileInput from '../../Components/FileInput/FileInput';
 import {AppRootStore} from '../../../Redux/store/AppStore';
 import {postTimelineRequest} from '../../../Network/Services/TimeLineApis';
 import {Routes} from '../../../Utils/Routes';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const AddNewTimeLine = (props: ScreenProps) => {
   const dispatch = useDispatch();
@@ -38,8 +39,6 @@ const AddNewTimeLine = (props: ScreenProps) => {
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
     const file = data?.attachments[0];
-    console.log('data-------------', data);
-
     let body = {
       text: data?.description,
       file: data?.attachments?.length
@@ -51,12 +50,11 @@ const AddNewTimeLine = (props: ScreenProps) => {
     try {
       dispatch(setLoader(true));
       let response: any = await postTimelineRequest(isNetConnected, body);
-      console.log('respose-----------', response);
       if (response?.success) {
+        Alert.alert(`${response?.message}`);
         props.navigation.navigate(Routes.Timeline.TimelineHome);
       } else {
-        console.log('i am in else case');
-        // dispatch(setIsAlertShow({value: true, message: response?.message}));
+        Alert.alert(`${response?.message}`);
       }
     } catch (e) {
       console.log('error in add store ', e);
@@ -72,44 +70,51 @@ const AddNewTimeLine = (props: ScreenProps) => {
         leftIcon
         onLeftIconPress={() => props?.navigation?.goBack()}
       />
-      <View style={styles.body}>
-        <Controller
-          control={control}
-          name="description"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Description</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Write your thoughts"
-                value={value}
-                isLargeHeighted
-                count
-                maxLength={250}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="attachments"
-          render={({field: {value, onChange}}) => (
-            <FileInput value={value} onChange={onChange} />
-          )}
-        />
-        <RoundButton
-          title="Add to timeline"
-          onPress={handleSubmit(onSubmit)}
-          containerStyle={{
-            backgroundColor: AppColors.green.dark,
-            margin: hv(10),
-            alignItems: 'center',
-          }}
-          titleStyle={{
-            color: AppColors.white.white,
-          }}
-        />
-      </View>
+      {isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
+        </View>
+      ) : (
+        <View style={styles.body}>
+          <Controller
+            control={control}
+            name="description"
+            render={({field: {value, onChange}}) => (
+              <>
+                <Text style={styles.txt}>Description</Text>
+                <RoundInput
+                  onChangeText={t => onChange(t)}
+                  placeholder="Write your thoughts"
+                  value={value}
+                  isLargeHeighted
+                  count
+                  maxLength={250}
+                />
+              </>
+            )}
+          />
+          <Controller
+            control={control}
+            name="attachments"
+            render={({field: {value, onChange}}) => (
+              <FileInput value={value} onChange={onChange} />
+            )}
+          />
+
+          <RoundButton
+            title="Add to timeline"
+            onPress={handleSubmit(onSubmit)}
+            containerStyle={{
+              backgroundColor: AppColors.green.dark,
+              margin: hv(10),
+              alignItems: 'center',
+            }}
+            titleStyle={{
+              color: AppColors.white.white,
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -125,5 +130,10 @@ const styles = StyleSheet.create({
     color: AppColors.black.black,
     marginVertical: hv(10),
     fontWeight: '500',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
   },
 });

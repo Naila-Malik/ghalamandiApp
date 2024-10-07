@@ -41,6 +41,9 @@ export const AppSlice = createSlice({
     setIsAlertShow: (state, action) => {
       state.isAlertShow = action.payload;
     },
+    logOut: (state, action) => {
+      state.userData = null;
+    },
   },
 });
 
@@ -53,6 +56,7 @@ export const {
   setIsNotchDevice,
   setNetConnected,
   setIsAlertShow,
+  logOut,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

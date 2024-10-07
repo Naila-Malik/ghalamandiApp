@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -32,10 +33,11 @@ import RoundInput from '../../Components/CustomInput/RoundInput';
 import CustomDropdown from '../../Components/Dropdown/CustomDropdown';
 import FileInput from '../../Components/FileInput/FileInput';
 import {AppRootStore} from '../../../Redux/store/AppStore';
+import {addNewRateCityWise} from '../../../Network/Services/MandiRates';
+import moment from 'moment';
 
 const AddCropRate = (props: ScreenProps) => {
-  let name = props?.route?.params?.name;
-  let id = props?.route?.params?.id;
+  let {name, id} = props?.route?.params;
   const dispatch = useDispatch();
   const date = useMemo(() => new Date(), []);
   const {isNetConnected, isLoaderStart} = useSelector(
@@ -66,7 +68,9 @@ const AddCropRate = (props: ScreenProps) => {
   };
 
   useEffect(() => {
-    fetchCropTypeDD();
+    if (id) {
+      fetchCropTypeDD();
+    }
   }, []);
 
   // const openFile = (attachmentUrl: string) => {
@@ -82,7 +86,7 @@ const AddCropRate = (props: ScreenProps) => {
     defaultValues: {
       cropId: id,
       categoryType: 0,
-      priceDate: new Date(),
+      // priceDate: new Date(),
       price: 0,
       minPrice: 0,
       maxPrice: 0,
@@ -90,28 +94,31 @@ const AddCropRate = (props: ScreenProps) => {
   });
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
-    const file = data?.attachments[0];
+    // const file = data?.attachments[0];
 
     let body = {
       crop_id: id,
-      crop_type: data?.categoryType.id || 0,
-      price: data?.price || 0,
+      categoryType: data?.categoryType.id,
+      date: new Date(),
+      max_price: data?.maxPrice,
+      min_price: data?.minPrice,
     };
     try {
       dispatch(setLoader(true));
-      let response: any = await addStoreRequest(isNetConnected, body);
-      console.log('respose-----------', response);
+      let response: any = await addNewRateCityWise(isNetConnected, body);
       if (response?.success) {
-        props.navigation.navigate(Routes.Products.SalePurchase);
+        // props.navigation.navigate(Routes.Products.SalePurchase);
+        Alert.alert(`${response?.message}`);
       } else {
-        console.log('i am in else case');
         // dispatch(setIsAlertShow({value: true, message: response?.message}));
+        Alert.alert(`${response?.message}`);
       }
     } catch (e) {
-      console.log('error in add store ', e);
-    } finally {
-      dispatch(setLoader(false));
+      console.log('error in add mandi rate ', e);
     }
+    // finally {
+    //   dispatch(setLoader(false));
+    // }
   };
   return (
     <View style={AppStyles.MainStyle}>
@@ -140,20 +147,14 @@ const AddCropRate = (props: ScreenProps) => {
             </>
           )}
         />
-        <Controller
-          control={control}
-          name="priceDate"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Price date</Text>
-              <RoundInput
-                onChangeText={(t: any) => onChange(t)}
-                placeholder={''}
-                value={value}
-              />
-            </>
-          )}
-        />
+        <>
+          <Text style={styles.txt}>Price date</Text>
+          <View style={styles.inputView}>
+            <Text style={[styles.txt, {color: AppColors.grey.grey}]}>{`${moment(
+              new Date(),
+            ).format('MMM Do YYYY')}`}</Text>
+          </View>
+        </>
         <Controller
           control={control}
           name="minPrice"
@@ -211,8 +212,15 @@ const styles = StyleSheet.create({
   txt1: {
     fontSize: 14,
     color: AppColors.black.black,
-    // marginVertical: hv(10),
     fontWeight: '500',
     textAlign: 'center',
+  },
+  inputView: {
+    borderRadius: 6,
+    paddingHorizontal: normalized(10),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: hv(2),
+    backgroundColor: AppColors.white.white,
   },
 });

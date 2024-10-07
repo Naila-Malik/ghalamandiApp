@@ -1,4 +1,12 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
@@ -10,74 +18,106 @@ import {
   normalized,
 } from '../../../Utils/AppConstants';
 import CardUI from '../../Components/Card/CardUI';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import {logOut} from '../../../Redux/reducers/AppReducer';
+import CommonDataManager from '../../../Utils/CommonManager';
+import {logoutRequest} from '../../../Network/Services/Setting';
+import {Routes} from '../../../Utils/Routes';
 
 const SettingsScreen = (props: ScreenProps) => {
+  const {isNetConnected, userData} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
+  const dispatch = useDispatch();
+
+  const userLogout = async () => {
+    try {
+      let response: any = await logoutRequest(isNetConnected);
+      if (response?.success) {
+        await CommonDataManager.getSharedInstance().saveUserData(null);
+        await CommonDataManager.getSharedInstance().saveUserToken('');
+        dispatch(logOut('logout'));
+      } else {
+        Alert.alert(response?.message);
+      }
+    } catch (e) {
+      console.log('error------> ', e);
+    }
+  };
+  // console.log('dayayayyayayay', userData);
   return (
-    <View style={AppStyles.mainContainer}>
-      <AppHeader
-        title="Settings"
-        leftIcon
-        onLeftIconPress={() => props.navigation.goBack()}
-      />
-      <View style={styles.header}>
-        <View style={styles.imgContainer}>
-          <Image
-            source={AppImages.Common.placeholderImg}
-            style={styles.profileImg}
+    <ScrollView>
+      <KeyboardAvoidingView style={AppStyles.mainContainer}>
+        <AppHeader
+          title="Settings"
+          leftIcon
+          onLeftIconPress={() => props.navigation.goBack()}
+        />
+        <View style={styles.header}>
+          <View style={styles.imgContainer}>
+            <Image
+              source={AppImages.Common.placeholderImg}
+              style={styles.profileImg}
+            />
+          </View>
+          <Text style={styles.title}>{userData?.name}</Text>
+          <Text style={styles.txt}> {userData?.role} </Text>
+        </View>
+        <View style={{flex: 1}}>
+          <CardUI
+            label="Edit Profile"
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() =>
+              props?.navigation.navigate(Routes.Settings.UserProfile)
+            }
+            leftImg={AppImages.Settings.PersonIcon}
+          />
+          <CardUI
+            label="Statistics "
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.StaticsIcon}
+          />
+          <CardUI
+            label="Verification Status "
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.StatusIcon}
+          />
+          <CardUI
+            label="Select Language "
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.languageIcon}
+          />
+          <CardUI
+            label="My Addresses"
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.AddressIcon}
+          />
+          <CardUI
+            label="Notification Setting"
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.notifiIcon}
+          />
+          <CardUI
+            label="Change your City"
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={() => console.log('btn')}
+            leftImg={AppImages.Settings.CityIcon}
+          />
+          <CardUI
+            label="Logout"
+            rightImgStyleView={styles.rightImgStyleView}
+            onPress={userLogout}
+            leftImg={AppImages.Settings.LogoutIcon}
           />
         </View>
-        <Text style={styles.title}>Al- Naeem Enterprises </Text>
-        <Text style={styles.txt}> Seller </Text>
-      </View>
-      <CardUI
-        label="Edit Profile"
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.PersonIcon}
-      />
-      <CardUI
-        label="Statistics "
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.StaticsIcon}
-      />
-      <CardUI
-        label="Verification Status "
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.StatusIcon}
-      />
-      <CardUI
-        label="Select Language "
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.languageIcon}
-      />
-      <CardUI
-        label="My Addresses"
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.AddressIcon}
-      />
-      <CardUI
-        label="Notification Setting"
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.notifiIcon}
-      />
-      <CardUI
-        label="Change your City"
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.CityIcon}
-      />
-      <CardUI
-        label="Logout"
-        rightImgStyleView={styles.rightImgStyleView}
-        onPress={() => console.log('btn')}
-        leftImg={AppImages.Settings.LogoutIcon}
-      />
-    </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -107,9 +147,6 @@ const styles = StyleSheet.create({
     width: normalized(50),
     height: hv(50),
     resizeMode: 'contain',
-    // alignSelf: 'center',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   title: {
     color: AppColors.black.black,
