@@ -2,6 +2,7 @@ export const Routes = {
   Auth: {
     setLanguage: 'setLanguage',
     login: 'login',
+    signUp: 'signUp',
   },
   home: {
     homePage: 'homePage',
@@ -32,6 +33,8 @@ export const Routes = {
     CShopDetail: 'CShopDetail',
   },
   MyShop: {
+    MyShopIndex: 'MyShopIndex',
+    MyShopDetail: 'MyShopDetail',
     MyShopHome: 'MyShopHome',
     CityList: 'CityList',
   },
@@ -42,12 +45,14 @@ export const Routes = {
   Timeline: {
     TimelineHome: 'TimelineHome',
     AddNewTimeLine: 'AddNewTimeLine',
+    Comments: 'Comments',
   },
   Notification: {
     NotificationHome: 'NotificationHome',
   },
   Settings: {
     SettingHome: 'SettingHome',
+    UserProfile: 'UserProfile',
   },
   Support: {
     SupportHome: 'SupportHome',

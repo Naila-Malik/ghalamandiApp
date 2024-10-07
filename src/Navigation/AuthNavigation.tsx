@@ -6,6 +6,7 @@ import {
 import {Routes} from '../Utils/Routes';
 import SelectLanguage from '../Ui/Sections/Auth/SelectLanguage';
 import LoginScreen from '../Ui/Sections/Auth/LoginScreen';
+import SignUpScreen from '../Ui/Sections/Auth/SignUpScreen';
 
 const Stack = createStackNavigator();
 const AuthStack = () => {
@@ -19,6 +20,7 @@ const AuthStack = () => {
       }}>
       <Stack.Screen name={Routes.Auth.setLanguage} component={SelectLanguage} />
       <Stack.Screen name={Routes.Auth.login} component={LoginScreen} />
+      <Stack.Screen name={Routes.Auth.signUp} component={SignUpScreen} />
     </Stack.Navigator>
   );
 };

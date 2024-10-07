@@ -7,6 +7,7 @@ import {setLoader} from '../Redux/reducers/AppReducer';
 import {FileExtensions} from './AppTypes';
 import {format} from 'date-fns';
 import {enUS} from 'date-fns/locale';
+import {getCitiesList} from '../Network/Services/MandiRates';
 
 export const capitalizeFirstLetter = (txt = '') => {
   if (txt?.length > 0) {
@@ -95,6 +96,25 @@ export const formateDate = (date: Date | string): string => {
   const apiDate = new Date(date);
   const formattedDate = format(apiDate, 'MMMM d, yyyy', {locale: enUS});
   return formattedDate;
+};
+
+export const formatTime = (date: Date | string): string => {
+  const apiDate = new Date(date);
+  const formattedTime = format(apiDate, 'hh:mm a'); // 'hh:mm a' for 12-hour format
+  return formattedTime;
+};
+
+export const CitiesList = async () => {
+  try {
+    let response: any = await getCitiesList();
+    if (response?.success) {
+      let result = response?.data;
+      return result;
+    }
+  } catch (e) {
+    console.log('error------> ', e);
+  }
+  return null;
 };
 
 /////////////

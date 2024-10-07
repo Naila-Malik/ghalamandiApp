@@ -41,6 +41,10 @@ import CShopDetail from '../Ui/Sections/CommissionShops/CShopDetail';
 import CityList from '../Ui/Sections/MyShop/CityList';
 import AddNewTimeLine from '../Ui/Sections/TimeLine/AddNewTimeLine';
 import RealtimeChat from '../Ui/Sections/Inbox/RealtimeChat';
+import Comments from '../Ui/Sections/TimeLine/Comments';
+import MyShopDetail from '../Ui/Sections/MyShop/MyShopDetail';
+import Index from '../Ui/Sections/MyShop/Index';
+import UserProfile from '../Ui/Sections/Settings/UserProfile';
 
 const Stack = createStackNavigator();
 
@@ -162,9 +166,15 @@ const CommissionShopsStack = () => {
 const MyShopsStack = () => {
   return (
     <Stack.Navigator
+      initialRouteName={Routes.MyShop.MyShopIndex}
       screenOptions={{
         headerShown: false,
       }}>
+      <Stack.Screen name={Routes.MyShop.MyShopIndex} component={Index} />
+      <Stack.Screen
+        name={Routes.MyShop.MyShopDetail}
+        component={MyShopDetail}
+      />
       <Stack.Screen name={Routes.MyShop.CityList} component={CityList} />
       <Stack.Screen name={Routes.MyShop.MyShopHome} component={MyShopScreen} />
     </Stack.Navigator>
@@ -195,6 +205,7 @@ const TimeLineStack = () => {
         name={Routes.Timeline.AddNewTimeLine}
         component={AddNewTimeLine}
       />
+      <Stack.Screen name={Routes.Timeline.Comments} component={Comments} />
     </Stack.Navigator>
   );
 };
@@ -220,6 +231,10 @@ const SettingsStack = () => {
       <Stack.Screen
         name={Routes.Settings.SettingHome}
         component={SettingsScreen}
+      />
+      <Stack.Screen
+        name={Routes.Settings.UserProfile}
+        component={UserProfile}
       />
     </Stack.Navigator>
   );

@@ -1,6 +1,7 @@
 import Api from '../Api';
 import {ApiResponseHandler} from '../ApiResponseHandler';
 import {
+  ADD_CROP,
   ADD_PROD_STORE,
   GET_ALL_CROP,
   GET_ALL_PRO,
@@ -9,6 +10,7 @@ import {
   GET_PRO_BY_CROP_ID,
   GET_USER_DEALS,
   LOGIN_URL,
+  SIGNUP_URL,
   WHEATER_API_URL,
 } from '../Urls';
 
@@ -17,6 +19,22 @@ export const loginRequest = async <T>(
   params: any,
 ): Promise<ApiResponseHandler<T>> => {
   const urlForApiCall = LOGIN_URL;
+  const method = 'POST';
+  const sendToken = false;
+  let apiRequest = await Api(
+    internetCheck,
+    urlForApiCall,
+    method,
+    sendToken,
+    params,
+  );
+  return apiRequest;
+};
+export const signUpRequest = async <T>(
+  internetCheck: boolean,
+  params: any,
+): Promise<ApiResponseHandler<T>> => {
+  const urlForApiCall = SIGNUP_URL;
   const method = 'POST';
   const sendToken = false;
   let apiRequest = await Api(
@@ -44,6 +62,7 @@ export const getWheatherReq = async <T>(
   );
   return apiRequest;
 };
+
 export const getAllCrops = async <T>(
   internetCheck: boolean,
 ): Promise<ApiResponseHandler<T>> => {
@@ -155,6 +174,23 @@ export const getUserDeals = async <T>(
     method,
     sendToken,
     {},
+  );
+  return apiRequest;
+};
+
+export const addCropRequest = async <T>(
+  internetCheck: boolean,
+  params: any,
+): Promise<ApiResponseHandler<T>> => {
+  const urlForApiCall = ADD_CROP;
+  const method = 'POST';
+  const sendToken = true;
+  let apiRequest = await Api(
+    internetCheck,
+    urlForApiCall,
+    method,
+    sendToken,
+    params,
   );
   return apiRequest;
 };

@@ -8,25 +8,28 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
+import {ScreenProps} from 'react-native-screens';
 import {
-  AppColors,
-  AppImages,
-  ScreenProps,
-  hv,
   normalized,
+  AppImages,
+  hv,
+  AppColors,
 } from '../../../Utils/AppConstants';
 import {AppStyles} from '../../../Utils/AppStyles';
-import AppHeader from '../../Components/Header/AppHeader';
 import RoundButton from '../../Components/Button/RoundButton';
+import AppHeader from '../../Components/Header/AppHeader';
 
-const CShopDetail = (props: ScreenProps) => {
-  const item = props?.route?.params?.item;
+type ShopDetailProps = ScreenProps & {
+  item: any;
+};
+
+const MyShopDetail: React.FC<ShopDetailProps> = ({item, navigation, route}) => {
   return (
     <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
       <AppHeader
         title="Shop Details"
         leftIcon
-        onLeftIconPress={() => props?.navigation?.goBack()}
+        onLeftIconPress={() => navigation?.goBack()}
       />
       <View style={{flex: 1}}>
         <View style={styles.card}>
@@ -142,13 +145,12 @@ const CShopDetail = (props: ScreenProps) => {
   );
 };
 
-export default CShopDetail;
+export default MyShopDetail;
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: AppColors.white.white,
     borderRadius: normalized(20),
-    // flex: 1,
     paddingHorizontal: normalized(10),
   },
   imgCradCon: {

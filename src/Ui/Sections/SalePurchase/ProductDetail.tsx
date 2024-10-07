@@ -13,19 +13,50 @@ import {formateDate} from '../../../Utils/helper';
 import RoundButton from '../../Components/Button/RoundButton';
 import BottomSheet from '../../Components/CustomBottomSheet/BottomSheet';
 import {Routes} from '../../../Utils/Routes';
+import {useDispatch, useSelector} from 'react-redux';
+import {addCropRequest} from '../../../Network/Services/HomeApis';
+import {setIsAlertShow, setLoader} from '../../../Redux/reducers/AppReducer';
+import {AppRootStore} from '../../../Redux/store/AppStore';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const ProductDetail = (props: ScreenProps) => {
   let item = props?.route?.params?.item;
-  // console.log('item----------', item);
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>();
   const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
+  const {isNetConnected, isLoaderStart} = useSelector(
+    (state: AppRootStore) => state.AppReducer,
+  );
 
-  const handlePress = () => {
-    // Handle the press event
-    // console.log('Bid submitted with amount:', amount);
-    Alert.alert('Bid submitted with amount:', amount.toString());
-    setShowModal(false);
+  const handlePress = async () => {
+    dispatch(setLoader(true));
+    if (!amount || amount <= 0) {
+      Alert.alert('Error', 'Please enter a valid amount to place your bid.');
+      return;
+    }
+    let body = {
+      sale_id: item?.id,
+      amount: amount,
+    };
+    try {
+      if (amount) {
+        let response: any = await addCropRequest(isNetConnected, body);
+        if (response?.success) {
+          Alert.alert('Bid submitted with amount:', amount?.toString());
+          setShowModal(false);
+        } else {
+        }
+        dispatch(setIsAlertShow({value: true, message: response?.message}));
+      }
+    } catch (e) {
+      console.log('error in add store ', e);
+    } finally {
+      dispatch(setLoader(false));
+    }
   };
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   return (
     <View style={AppStyles.MainStyle}>
@@ -87,26 +118,34 @@ const ProductDetail = (props: ScreenProps) => {
         <Text style={[styles.txt, {margin: hv(10)}]}>
           {item?.stock_location}{' '}
         </Text>
-        <View style={styles.btnBox}>
-          <RoundButton
-            title="Chat"
-            onPress={() => props.navigation.navigate(Routes.Inbox.InboxHome)}
-            containerStyle={styles.Btn}
-            titleStyle={{color: AppColors.green.dark}}
-          />
-          <RoundButton
-            title="Place Bid"
-            onPress={() => setShowModal(true)}
-            containerStyle={styles.Btn2}
-            titleStyle={{color: AppColors.white.white}}
-          />
-        </View>
+        {isLoaderStart ? (
+          <View style={styles.emptyCont}>
+            <AppLoader visible={isLoaderStart} />
+          </View>
+        ) : (
+          <View style={styles.btnBox}>
+            <RoundButton
+              title="Chat"
+              onPress={() => props.navigation.navigate(Routes.Inbox.InboxHome)}
+              containerStyle={styles.Btn}
+              titleStyle={{color: AppColors.green.dark}}
+            />
+            <RoundButton
+              title="Place Bid"
+              onPress={openModal}
+              containerStyle={styles.Btn2}
+              titleStyle={{color: AppColors.white.white}}
+            />
+          </View>
+        )}
       </View>
       {showModal && (
         <BottomSheet
           amount={amount}
           setAmount={setAmount}
           onPress={handlePress}
+          visible={showModal}
+          onClose={closeModal}
         />
       )}
     </View>
@@ -129,7 +168,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   imgBG: {
-    // flex: 1,
     width: '100%',
     height: hv(170),
     alignItems: 'center',
@@ -186,5 +224,10 @@ const styles = StyleSheet.create({
     width: '48%',
     backgroundColor: AppColors.green.dark,
     alignItems: 'center',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
   },
 });

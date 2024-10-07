@@ -37,9 +37,7 @@ const DealsHistory = (props: ScreenProps) => {
     try {
       dispatch(setLoader(true));
       let response: any = await getMyDeals(isNetConnected);
-      console.log('response-------my-------', response);
-      setArr(response.data);
-      // response?.success ? setproductsCate(response?.data) : [];
+      setArr(response?.data);
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -51,10 +49,7 @@ const DealsHistory = (props: ScreenProps) => {
     try {
       dispatch(setLoader(true));
       let response: any = await getUserDeals(isNetConnected);
-      console.log('response--------user------', response.data);
-      setArr(response.data);
-
-      // response?.success ? setproductsCate(response?.data) : [];
+      setArr(response?.data);
     } catch (e) {
       console.log('error------> ', e);
     } finally {
@@ -151,7 +146,7 @@ const DealsHistory = (props: ScreenProps) => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}>
-                    <Text style={styles.txt}>{item.crop_id}</Text>
+                    <Text style={styles.txt}>{item.id}</Text>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -161,22 +156,21 @@ const DealsHistory = (props: ScreenProps) => {
                         source={AppImages.ProductCate.location}
                         style={styles.icon}
                       />
-                      <Text numberOfLines={1}>{item.stock_location}</Text>
+                      <Text numberOfLines={1}>
+                        {item?.sales?.stock_location}
+                      </Text>
                     </View>
                   </View>
                   <Text style={[styles.txt2, {color: AppColors.green.dark}]}>
-                    {item?.crop_type}
+                    {item?.crop_name}
                   </Text>
                   <Text style={styles.txt2}>
-                    Qty {item?.total_qty} {item?.weight_unit}
+                    Qty {item?.sales?.total_qty} {item?.sales?.weight_unit}
                   </Text>
-                  <Text style={styles.txt2}>R.s {item.price}</Text>
+                  <Text style={styles.txt2}>R.s {item?.sales?.price}</Text>
                 </TouchableOpacity>
               );
             }}
-            // ListFooterComponent={
-            //   <View style={{height: hv(10), backgroundColor: 'yellow'}} />
-            // }
           />
         )}
       </View>
@@ -233,6 +227,7 @@ const styles = StyleSheet.create({
   body: {
     paddingHorizontal: normalized(10),
     marginTop: hv(20),
+    flex: 1,
   },
   bgImg: {
     resizeMode: 'contain',

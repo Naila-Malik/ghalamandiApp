@@ -34,7 +34,7 @@ const AddBidScreen = (props: ScreenProps) => {
   const fetchCropApi = async () => {
     dispatch(setLoader(true));
     try {
-      let response: any = await getAllCrops(selector.isNetConnected);
+      let response: any = await getAllCrops(isNetConnected);
       response?.success ? setproductsCate(response?.data) : [];
       // dispatch(setIsAlertShow({value: true, message: response?.message}));
     } catch (e) {
@@ -57,7 +57,7 @@ const AddBidScreen = (props: ScreenProps) => {
         </View>
       ) : productsCate?.length == 0 && !isLoaderStart ? (
         <View style={styles.emptyCont}>
-          <Text style={styles.emptyTxt}>No Bids found!</Text>
+          <Text style={styles.emptyTxt}>No Crop found!</Text>
         </View>
       ) : (
         <FlatList

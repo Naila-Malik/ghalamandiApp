@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
@@ -24,6 +24,7 @@ import {useDocument} from '../../../Hooks/use-document';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Routes} from '../../../Utils/Routes';
 import {AppRootStore} from '../../../Redux/store/AppStore';
+import AppLoader from '../../Components/Loader/AppLoader';
 
 const NewBid = (props: ScreenProps) => {
   let name = props?.route?.params?.name;
@@ -126,19 +127,19 @@ const NewBid = (props: ScreenProps) => {
       packing: data?.packing.name || '',
       images: data?.attachments?.length
         ? RNFetchBlob.fs
-            .readFile(file.fileCopyUri, 'base64') // Read file as base64
+            .readFile(file.fileCopyUri, 'base64')
             .then(fileContent => fileContent)
         : [],
     };
     try {
+      console.log('data befor sent===========', body);
       dispatch(setLoader(true));
       let response: any = await addStoreRequest(isNetConnected, body);
-      console.log('respose-----------', response);
       if (response?.success) {
+        Alert.alert(`${response?.message}`);
         props.navigation.navigate(Routes.Products.SalePurchase);
       } else {
-        console.log('i am in else case');
-        // dispatch(setIsAlertShow({value: true, message: response?.message}));
+        Alert.alert(`${response?.message}`);
       }
     } catch (e) {
       console.log('error in add store ', e);
@@ -154,147 +155,163 @@ const NewBid = (props: ScreenProps) => {
         leftIcon
         onLeftIconPress={() => props?.navigation?.goBack()}
       />
-      <View style={{paddingHorizontal: normalized(10)}}>
-        <Controller
-          control={control}
-          name="categoryType"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>{name} Type</Text>
-              <CustomDropdown
-                selectValue={value}
-                data={cropTypeDD}
-                oneSelect={(t: any) => onChange(t)}
-              />
-            </>
-          )}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-between',
-          }}>
-          <Controller
-            control={control}
-            name="quantity"
-            render={({field: {value, onChange}}) => (
-              <View style={{width: '48%'}}>
-                <Text style={styles.txt}>Total Qty</Text>
-                <RoundInput
-                  onChangeText={t => onChange(t)}
-                  placeholder="Total Qty"
-                  value={value}
-                />
-              </View>
-            )}
-          />
-          <Controller
-            control={control}
-            name="weight"
-            render={({field: {value, onChange}}) => (
-              <View style={{width: '48%'}}>
-                <Text style={styles.txt}>Weight unit</Text>
-                <CustomDropdown
-                  selectValue={value}
-                  data={weightUnit}
-                  oneSelect={(t: any) => onChange(t)}
-                />
-              </View>
-            )}
-          />
+      {isLoaderStart ? (
+        <View style={styles.emptyCont}>
+          <AppLoader visible={isLoaderStart} />
         </View>
-        <Controller
-          control={control}
-          name="price"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Price/ kg</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Price/ Kg"
-                value={value}
+      ) : (
+        <>
+          <View style={{paddingHorizontal: normalized(10)}}>
+            <Controller
+              control={control}
+              name="categoryType"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>{name} Type</Text>
+                  <CustomDropdown
+                    selectValue={value}
+                    data={cropTypeDD}
+                    oneSelect={(t: any) => onChange(t)}
+                  />
+                </>
+              )}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                justifyContent: 'space-between',
+              }}>
+              <Controller
+                control={control}
+                name="quantity"
+                render={({field: {value, onChange}}) => (
+                  <View style={{width: '48%'}}>
+                    <Text style={styles.txt}>Total Qty</Text>
+                    <RoundInput
+                      onChangeText={t => onChange(t)}
+                      placeholder="Total Qty"
+                      value={value}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                )}
               />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="packing"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Packing</Text>
-              <CustomDropdown
-                selectValue={value}
-                data={packing}
-                oneSelect={(t: any) => onChange(t)}
+              <Controller
+                control={control}
+                name="weight"
+                render={({field: {value, onChange}}) => (
+                  <View style={{width: '48%'}}>
+                    <Text style={styles.txt}>Weight unit</Text>
+                    <CustomDropdown
+                      selectValue={value}
+                      data={weightUnit}
+                      oneSelect={(t: any) => onChange(t)}
+                    />
+                  </View>
+                )}
               />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="location"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Stock Location</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Stock Location"
-                value={value}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="moisture"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Moisture percentage</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="Enter Moisture percentage"
-                value={value}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="description"
-          render={({field: {value, onChange}}) => (
-            <>
-              <Text style={styles.txt}>Description</Text>
-              <RoundInput
-                onChangeText={t => onChange(t)}
-                placeholder="About your crop"
-                value={value}
-                isLargeHeighted
-                count
-                maxLength={100}
-              />
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="attachments"
-          render={({field: {value, onChange}}) => (
-            <FileInput value={value} onChange={onChange} />
-          )}
-        />
-      </View>
-      <RoundButton
-        title="Post"
-        onPress={handleSubmit(onSubmit)}
-        containerStyle={{
-          backgroundColor: AppColors.green.dark,
-          margin: hv(10),
-          alignItems: 'center',
-        }}
-        titleStyle={{
-          color: AppColors.white.white,
+            </View>
+            <Controller
+              control={control}
+              name="price"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Price/ kg</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Price/ Kg"
+                    value={value}
+                    keyboardType="numeric"
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="packing"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Packing</Text>
+                  <CustomDropdown
+                    selectValue={value}
+                    data={packing}
+                    oneSelect={(t: any) => onChange(t)}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="location"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Stock Location</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Stock Location"
+                    value={value}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="moisture"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Moisture percentage</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="Enter Moisture percentage"
+                    value={value}
+                    keyboardType="numeric"
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="description"
+              render={({field: {value, onChange}}) => (
+                <>
+                  <Text style={styles.txt}>Description</Text>
+                  <RoundInput
+                    onChangeText={t => onChange(t)}
+                    placeholder="About your crop"
+                    value={value}
+                    isLargeHeighted
+                    count
+                    maxLength={100}
+                  />
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="attachments"
+              render={({field: {value, onChange}}) => (
+                <FileInput value={value} onChange={onChange} />
+              )}
+            />
+          </View>
+          <RoundButton
+            title="Post"
+            onPress={handleSubmit(onSubmit)}
+            containerStyle={{
+              backgroundColor: AppColors.green.dark,
+              margin: hv(10),
+              alignItems: 'center',
+            }}
+            titleStyle={{
+              color: AppColors.white.white,
+            }}
+          />
+        </>
+      )}
+      <View
+        style={{
+          height: hv(20),
         }}
       />
     </ScrollView>
@@ -309,5 +326,10 @@ const styles = StyleSheet.create({
     color: AppColors.black.black,
     marginVertical: hv(10),
     fontWeight: '500',
+  },
+  emptyCont: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: normalized(150),
   },
 });

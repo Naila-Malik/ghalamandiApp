@@ -10,7 +10,7 @@ const Api = async (
   body = {},
   isFormData = false,
 ) => {
-  let headers: any;
+  let headers: any = {}; // Initialize headers object
   const {CancelToken} = axios;
   const source = CancelToken.source();
   var apiTimeout = setTimeout(() => {
@@ -18,13 +18,9 @@ const Api = async (
   }, 30000);
 
   if (isFormData) {
-    headers = {
-      'Content-Type': 'multipart/form-data',
-    };
+    headers['Content-Type'] = 'multipart/form-data';
   } else {
-    headers = {
-      'Content-Type': 'application/json',
-    };
+    headers['Content-Type'] = 'application/json';
   }
 
   if (!internetValue) {
@@ -38,7 +34,7 @@ const Api = async (
   if (token) {
     const userToken =
       await CommonDataManager.getSharedInstance().getUserToken();
-    headers['Authorization'] = userToken;
+    headers['Authorization'] = `Bearer ${userToken}`;
   }
 
   const structure: any = {
@@ -71,7 +67,6 @@ const Api = async (
       clearTimeout(apiTimeout);
       if (error?.response?.data?.message == AppStrings.Network.tokenExpired) {
         let result = '';
-        // await refreshTokenRequest(internetValue); //refresh Token
         if (result) {
           await Api(internetValue, url, method, token, body, isFormData);
         } else {

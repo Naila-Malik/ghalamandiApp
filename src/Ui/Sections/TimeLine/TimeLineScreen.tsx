@@ -30,33 +30,11 @@ import {
 
 const TimeLineScreen = (props: ScreenProps) => {
   const [Arr, setArr] = useState([]);
+  const [like, setLike] = useState(false);
   const {isNetConnected, isLoaderStart, userData} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
   const dispatch = useDispatch();
-
-  // const Arr = [
-  //   {
-  //     id: 1,
-  //     name: 'xyz',
-  //     date: new Date(),
-  //     notes:
-  //       'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document ',
-  //     likes: 0,
-  //     comments: 0,
-  //     photo: '',
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'abc',
-  //     date: new Date(),
-  //     notes:
-  //       'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document ',
-  //     likes: 0,
-  //     comments: 0,
-  //     photo: '',
-  //   },
-  // ];
 
   const fetchAlTimeLines = async () => {
     dispatch(setLoader(true));
@@ -73,30 +51,28 @@ const TimeLineScreen = (props: ScreenProps) => {
   const LikeTimeLineReq = async (postId: number) => {
     const body = {
       post_id: postId,
+      user_id: userData?.id,
     };
-    // dispatch(setLoader(true));
     console.log('body======', body);
     try {
       let response: any = await LikeTimeline(isNetConnected, body);
-      console.log('response==============', response);
+      console.log('response=============', response);
+      await setLike(response?.status);
       dispatch(setIsAlertShow({value: true, message: response?.message}));
     } catch (e) {
       console.log('error------> ', e);
-    } finally {
-      // dispatch(setLoader(false));
     }
   };
 
   useEffect(() => {
     fetchAlTimeLines();
-  }, []);
-  // const Options = async () => {
+  }, [like]);
   const Options = {
     title: 'Share file',
     message: 'Test sharing the app with external link',
     url: 'https://google.com',
   };
-  // console.log('userData----------', userData);
+
   return (
     <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
       <AppHeader
@@ -136,10 +112,9 @@ const TimeLineScreen = (props: ScreenProps) => {
             keyExtractor={(item, index) => `@${index}`}
             contentContainerStyle={styles.cardContainer}
             renderItem={({item}: any) => {
-              // console.log('item-----------', item);
               return (
                 <View style={styles.card}>
-                  <View style={styles.header}>
+                  <View style={styles.header1}>
                     <Image
                       source={
                         item?.photo
@@ -155,7 +130,13 @@ const TimeLineScreen = (props: ScreenProps) => {
                       </Text>
                     </View>
                   </View>
-                  <Text style={styles.txt2}>{item.content} </Text>
+                  <View style={{flex: 1}}>
+                    <Text style={styles.txt2}>{item.content} </Text>
+                    <Image
+                      source={{uri: item?.file}}
+                      style={{width: '40%', height: '80%'}}
+                    />
+                  </View>
                   <View style={styles.cardBottom}>
                     <TouchableOpacity
                       onPress={() => {
@@ -166,9 +147,25 @@ const TimeLineScreen = (props: ScreenProps) => {
                         source={AppImages.Common.likeIcon}
                         style={styles.personIcon1}
                       />
-                      <Text style={styles.txt1}>{item.likes} likes </Text>
+                      <Text
+                        style={[
+                          styles.txt1,
+                          {
+                            color: like
+                              ? AppColors.green.dark
+                              : AppColors.black.black,
+                          },
+                        ]}>
+                        {item.likes} likes{' '}
+                      </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}} style={styles.bar}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        props?.navigation.navigate(Routes.Timeline.Comments, {
+                          id: item?.id,
+                        })
+                      }
+                      style={styles.bar}>
                       <Image
                         source={AppImages.Common.commentIcon}
                         style={styles.personIcon1}
@@ -215,12 +212,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: normalized(10),
   },
+  header1: {
+    flexDirection: 'row',
+    marginHorizontal: normalized(10),
+    flex: 1,
+    backgroundColor: AppColors.white.white,
+    padding: normalized(10),
+    alignItems: 'center',
+    borderRadius: normalized(10),
+  },
   img: {
     width: normalized(50),
     height: hv(50),
     resizeMode: 'contain',
     borderRadius: normalized(35),
-    // marginRight: normalized(10),
   },
   imgCon: {
     width: normalized(60),
@@ -239,7 +244,6 @@ const styles = StyleSheet.create({
     width: normalized(15),
     height: hv(15),
     resizeMode: 'contain',
-    // borderRadius: normalized(25),
     marginRight: normalized(10),
   },
   txt: {
@@ -258,11 +262,9 @@ const styles = StyleSheet.create({
     color: AppColors.grey.grey,
     fontSize: normalized(14),
     fontWeight: '500',
-    // alignSelf: 'center',
     marginHorizontal: hv(10),
   },
   txt1: {
-    color: AppColors.black.black,
     fontSize: normalized(14),
     fontWeight: '500',
   },
@@ -299,6 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: hv(10),
     justifyContent: 'space-between',
+    flex: 0.5,
   },
   bar: {
     width: '30%',
