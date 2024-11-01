@@ -11,6 +11,7 @@ import React, {useEffect, useState} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import {
   AppColors,
+  AppImages,
   // Crops,
   ScreenProps,
   hv,
@@ -76,8 +77,16 @@ const AddBidScreen = (props: ScreenProps) => {
                     id: item?.id,
                   });
                 }}>
-                <Image source={item?.avatar} style={styles.bgImg} />
-
+                <View style={styles.bgImg}>
+                  <Image
+                    source={
+                      item?.avatar
+                        ? {uri: item?.avatar}
+                        : AppImages.Common.placeholderImg
+                    }
+                    style={styles.Img}
+                  />
+                </View>
                 <Text style={styles.txt}>{item?.name}</Text>
               </TouchableOpacity>
             );
@@ -114,9 +123,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: normalized(10),
   },
   bgImg: {
+    alignSelf: 'center',
+    marginTop: hv(10),
+    height: hv(120),
+    width: normalized(120),
+  },
+  Img: {
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginVertical: hv(10),
+    height: hv(100),
+    width: normalized(100),
   },
   cardContainer: {
     justifyContent: 'space-between',

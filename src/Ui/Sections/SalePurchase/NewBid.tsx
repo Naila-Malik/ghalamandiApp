@@ -33,7 +33,6 @@ const NewBid = (props: ScreenProps) => {
   const {isNetConnected, isLoaderStart} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
-  const documentViewer = useDocument<string>();
   const [cropTypeDD, setCropTypeDD] = useState([
     {
       id: 0,
@@ -132,7 +131,7 @@ const NewBid = (props: ScreenProps) => {
         : [],
     };
     try {
-      console.log('data befor sent===========', body);
+      // console.log('data befor sent===========', body);
       dispatch(setLoader(true));
       let response: any = await addStoreRequest(isNetConnected, body);
       if (response?.success) {

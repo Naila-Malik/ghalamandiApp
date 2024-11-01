@@ -32,20 +32,6 @@ const InboxScreen = (props: ScreenProps) => {
   );
   const dispatch = useDispatch();
   const [Arr, setArr] = useState([]);
-  // const Arr = [
-  //   {
-  //     name: 'Maher Munir Sb',
-  //     price: 480,
-  //     quantity: 4.5,
-  //     packingType: 'bori',
-  //     date: new Date(),
-  //     crop: 'Potato',
-  //     bids: 0,
-  //     dealType: 'Open',
-  //     image: '',
-  //     PNumber: 923366422267,
-  //   },
-  // ];
 
   const fetchMyDeals = async () => {
     try {

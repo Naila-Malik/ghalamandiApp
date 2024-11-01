@@ -73,6 +73,7 @@ const TimeLineScreen = (props: ScreenProps) => {
     url: 'https://google.com',
   };
 
+  // console.log('user dtataaaaa============================', userData);
   return (
     <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
       <AppHeader
@@ -112,6 +113,7 @@ const TimeLineScreen = (props: ScreenProps) => {
             keyExtractor={(item, index) => `@${index}`}
             contentContainerStyle={styles.cardContainer}
             renderItem={({item}: any) => {
+              // console.log('item======================', item);
               return (
                 <View style={styles.card}>
                   <View style={styles.header1}>
@@ -133,7 +135,11 @@ const TimeLineScreen = (props: ScreenProps) => {
                   <View style={{flex: 1}}>
                     <Text style={styles.txt2}>{item.content} </Text>
                     <Image
-                      source={{uri: item?.file}}
+                      source={
+                        item?.file
+                          ? {uri: item?.file}
+                          : AppImages.Common.placeholderImg
+                      }
                       style={{width: '40%', height: '80%'}}
                     />
                   </View>
@@ -232,6 +238,10 @@ const styles = StyleSheet.create({
     height: hv(60),
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: AppColors.white.whiteOp,
+    borderRadius: normalized(35),
+    marginRight: normalized(10),
   },
   personIcon: {
     width: normalized(30),

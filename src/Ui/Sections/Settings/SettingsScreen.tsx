@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {AppStyles} from '../../../Utils/AppStyles';
 import AppHeader from '../../Components/Header/AppHeader';
 import {
@@ -45,6 +45,10 @@ const SettingsScreen = (props: ScreenProps) => {
       console.log('error------> ', e);
     }
   };
+
+  // useEffect(() => {
+  //   console.log('user data==================', userData);
+  // }, [userData]);
   // console.log('dayayayyayayay', userData);
   return (
     <ScrollView>
@@ -57,7 +61,10 @@ const SettingsScreen = (props: ScreenProps) => {
         <View style={styles.header}>
           <View style={styles.imgContainer}>
             <Image
-              source={AppImages.Common.placeholderImg}
+              source={
+                userData?.user?.profile?.image ??
+                AppImages.Common.placeholderImg
+              }
               style={styles.profileImg}
             />
           </View>
@@ -133,20 +140,21 @@ const styles = StyleSheet.create({
     marginBottom: hv(10),
   },
   imgContainer: {
-    width: normalized(90),
-    height: hv(90),
+    width: normalized(100),
+    height: hv(100),
     backgroundColor: AppColors.grey.greyLighter,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: normalized(40),
+    borderRadius: normalized(47),
     borderWidth: 3,
     borderColor: AppColors.white.white,
   },
   profileImg: {
-    width: normalized(50),
-    height: hv(50),
-    resizeMode: 'contain',
+    width: normalized(95),
+    height: hv(95),
+    resizeMode: 'cover',
+    borderRadius: normalized(47),
   },
   title: {
     color: AppColors.black.black,

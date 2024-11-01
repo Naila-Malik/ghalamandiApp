@@ -82,6 +82,7 @@ const RoundInput = (props: Props) => {
           }
           maxLength={props.maxLength}
           multiline={props.isLargeHeighted ? true : false}
+          secureTextEntry={props.isPassword ? true : false}
         />
         {props?.rightIcon && (
           <TouchableOpacity
@@ -151,6 +152,5 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: normalized(20),
     height: hv(25),
-    // backgroundColor: AppColors.grey.grey,
   },
 });

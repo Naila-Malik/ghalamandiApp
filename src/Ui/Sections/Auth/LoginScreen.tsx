@@ -19,20 +19,10 @@ import {
 } from '../../../Utils/AppConstants';
 import RoundButton from '../../Components/Button/RoundButton';
 import {Routes} from '../../../Utils/Routes';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  setAlertObj,
-  setLoader,
-  setUserData,
-} from '../../../Redux/reducers/AppReducer';
+import {setLoader, setUserData} from '../../../Redux/reducers/AppReducer';
 import CommonDataManager from '../../../Utils/CommonManager';
 import {loginRequest} from '../../../Network/Services/HomeApis';
-import {ApiResponseHandler} from '../../../Network/ApiResponseHandler';
-import {AppStrings} from '../../../Utils/Strings';
 import AppLoader from '../../Components/Loader/AppLoader';
 import {AppRootStore} from '../../../Redux/store/AppStore';
 import {useForm, SubmitHandler, Controller} from 'react-hook-form';
@@ -71,7 +61,6 @@ const LoginScreen = (props: ScreenProps) => {
         await CommonDataManager.getSharedInstance().saveUserToken(
           response?.token,
         );
-
         dispatch(setUserData(response.data));
       } else {
         Alert.alert(`${response?.message}`);

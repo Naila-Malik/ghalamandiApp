@@ -117,7 +117,10 @@ const HomePage = (props: ScreenProps) => {
           />
         </View>
         <View style={styles.banner}>
-          <Image source={AppImages.Common.bannerImage} />
+          <Image
+            source={AppImages.Common.bannerImage}
+            style={styles.bannerImageStyle}
+          />
         </View>
         <FlatList
           data={homeMenuArray}
@@ -180,7 +183,15 @@ const styles = StyleSheet.create({
   banner: {
     marginTop: hv(20),
     alignSelf: 'center',
-    marginBottom: hv(30),
+    marginBottom: hv(20),
+    height: hv(150),
+    width: '100%',
+  },
+  bannerImageStyle: {
+    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
+    borderRadius: normalized(20),
   },
   bottom: {
     marginTop: hv(20),

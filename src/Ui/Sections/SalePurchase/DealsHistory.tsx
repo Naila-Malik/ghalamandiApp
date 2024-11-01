@@ -122,6 +122,7 @@ const DealsHistory = (props: ScreenProps) => {
             keyExtractor={(item, index) => `@${index}`}
             contentContainerStyle={styles.cardContainer}
             renderItem={({item}: any) => {
+              // console.log('arrrrrrrrrrrrrr==============', item);
               return (
                 <TouchableOpacity
                   style={styles.card}

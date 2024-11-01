@@ -23,6 +23,7 @@ export interface IReduxState {
   isNetConnected: boolean;
   safeArea: {top: number; bottom: number};
   userData: any;
+  userChat: any;
   mainMenuId: number;
   isNotchDevice: boolean;
   alertObj: any;

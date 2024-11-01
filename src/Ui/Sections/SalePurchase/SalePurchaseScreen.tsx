@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   AllProductsList,
   AppColors,
@@ -32,12 +32,14 @@ import {setLoader} from '../../../Redux/reducers/AppReducer';
 import {BASE_URL} from '../../../Network/Urls';
 import AppLoader from '../../Components/Loader/AppLoader';
 import {AppRootStore} from '../../../Redux/store/AppStore';
+import Carousel from 'react-native-snap-carousel';
 
 const SalePurchaseScreen = (props: ScreenProps) => {
   const [selectedItem, setSelectedItem] = useState('salePurchase');
   const [selectedCate, setSelectedCate] = useState(0);
   const [Arr, setArr] = useState([]);
   const [productsCate, setproductsCate] = useState([]);
+  const carouselRef = useRef();
   const {isNetConnected, isLoaderStart} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
@@ -86,6 +88,9 @@ const SalePurchaseScreen = (props: ScreenProps) => {
       dispatch(setLoader(false));
     }
   };
+  const RenderItem = React.memo(({item}: any) => {
+    return <Image source={{uri: item?.image}} style={styles.bgImg} />;
+  });
 
   return (
     <FlatList
@@ -138,6 +143,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={(item, index) => `@${index}`}
                   renderItem={({item}: any) => {
+                    // console.log('here is data===========', item);
                     return (
                       <View>
                         <TouchableOpacity
@@ -146,12 +152,11 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                           }}>
                           <View style={styles.menuBox}>
                             <Image
-                              // source={{uri: item?.avatar}}
-                              source={{
-                                uri: item?.avatar
-                                  ? item?.avatar
-                                  : AppImages.Common.placeholderImg,
-                              }}
+                              source={
+                                item?.avatar
+                                  ? {uri: item?.avatar}
+                                  : AppImages.Common.placeholderImg
+                              }
                               style={styles.img}
                             />
                           </View>
@@ -188,6 +193,7 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                   keyExtractor={(item, index) => `@${index}`}
                   contentContainerStyle={styles.cardContainer}
                   renderItem={({item}: any) => {
+                    // console.log('for bg image====================', item);
                     return (
                       <TouchableOpacity
                         style={styles.card}
@@ -200,15 +206,36 @@ const SalePurchaseScreen = (props: ScreenProps) => {
                           );
                         }}>
                         <View style={styles.bgImagCard}>
-                          <Image
-                            // source={{uri: `${BASE_URL}` + item?.images[0]?.image}}
-                            source={
-                              (item?.images ?? []).length > 0
-                                ? item?.images
-                                : AppImages.Common.placeholderImg
-                            }
-                            style={styles.bgImg}
-                          />
+                          {item?.images.length > 0 ? (
+                            <View
+                              style={{
+                                width: normalized(150), // Set a fixed width for the container
+                                height: hv(100),
+                              }}>
+                              <Carousel
+                                ref={() => carouselRef}
+                                layout={'default'}
+                                // keyExtractor={(imageItem: any) =>
+                                //   `@${imageItem.id}`
+                                // }
+                                data={item?.images}
+                                renderItem={({item}: any) => (
+                                  <RenderItem item={item} />
+                                )}
+                                sliderWidth={normalized(150)}
+                                itemWidth={normalized(150)}
+                                autoplay={true}
+                                autoplayDelay={500}
+                                autoplayInterval={3000}
+                                loop={true}
+                              />
+                            </View>
+                          ) : (
+                            <Image
+                              source={AppImages.Common.placeholderImg}
+                              style={styles.bgImg1}
+                            />
+                          )}
                         </View>
                         <View
                           style={{
@@ -330,15 +357,25 @@ const styles = StyleSheet.create({
     marginTop: hv(20),
   },
   bgImg: {
+    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
+    padding: hv(10),
+    margin: hv(10),
+    alignSelf: 'center',
+  },
+  bgImg1: {
     resizeMode: 'contain',
     width: normalized(100),
     height: hv(100),
-    marginVertical: hv(10),
+    margin: hv(10),
+    alignSelf: 'center',
   },
   bgImagCard: {
     alignItems: 'center',
     justifyContent: 'center',
     resizeMode: 'contain',
+    flex: 1,
   },
   emptyCont: {
     justifyContent: 'center',

@@ -50,6 +50,11 @@ export const AppImages = {
     likeIcon: require('../Ui/assets/images/Common/likeIcon.png'),
     commentIcon: require('../Ui/assets/images/Common/commentIcon.png'),
     sendChatIcon: require('../Ui/assets/images/Common/sendChat.png'),
+    editIcon: require('../Ui/assets/images/Common/editIcon.png'),
+    single_black_tick: require('../Ui/assets/images/Common/single-black-tick.png'),
+    double_black_tick: require('../Ui/assets/images/Common/double-black-tick.png'),
+    single_green_tick: require('../Ui/assets/images/Common/single-green-tick.png'),
+    double_green_tick: require('../Ui/assets/images/Common/double-green-tick.png'),
   },
   Home: {
     windIcon: require('../Ui/assets/images/Home/wind.png'),
