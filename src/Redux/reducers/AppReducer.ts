@@ -11,6 +11,7 @@ const initialState: IReduxState = {
   isNotchDevice: false,
   alertObj: null,
   isAlertShow: {value: false, message: ''},
+  userChat: null,
 };
 
 export const AppSlice = createSlice({
@@ -41,6 +42,9 @@ export const AppSlice = createSlice({
     setIsAlertShow: (state, action) => {
       state.isAlertShow = action.payload;
     },
+    setUserChat: (state, action) => {
+      state.userChat = action.payload;
+    },
     logOut: (state, action) => {
       state.userData = null;
     },
@@ -56,6 +60,7 @@ export const {
   setIsNotchDevice,
   setNetConnected,
   setIsAlertShow,
+  setUserChat,
   logOut,
 } = AppSlice.actions;
 

@@ -5,10 +5,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import {name} from 'moment';
+import React, {useState} from 'react';
 import {useForm, SubmitHandler, Controller} from 'react-hook-form';
 import {useSelector, useDispatch} from 'react-redux';
 import {AppRootStore} from '../../../Redux/store/AppStore';
@@ -28,13 +28,20 @@ import {setLoader} from '../../../Redux/reducers/AppReducer';
 import {Routes} from '../../../Utils/Routes';
 import AppHeader from '../../Components/Header/AppHeader';
 import CommonDataManager from '../../../Utils/CommonManager';
+import RNFetchBlob from 'rn-fetch-blob';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const UserProfile = (props: ScreenProps) => {
+  const [img, setImg] = useState<string | null>(null);
   const {isNetConnected, isLoaderStart, userData} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
   const dispatch = useDispatch();
 
+  const handleImageSelection = (image: any) => {
+    setImg(image);
+    return image;
+  };
   const {
     control,
     handleSubmit,
@@ -43,19 +50,28 @@ const UserProfile = (props: ScreenProps) => {
     defaultValues: {
       image: '',
       name: '',
+      address: '',
+      city: '',
       whatsapp: 0,
       mobile: 0,
     },
   });
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
-    let body = {
-      image: null,
-      name: data?.name,
-      whatsapp: data?.whatsapp,
-      mobile: data?.mobile,
-    };
     try {
+      let imageBase64 = null;
+      if (data?.image) {
+        imageBase64 = await RNFetchBlob.fs.readFile(data.image.path, 'base64');
+      }
+      let body = {
+        image: imageBase64, // Base64-encoded image
+        name: data?.name,
+        address: data?.address,
+        city: data?.city,
+        whatsapp: data?.whatsapp,
+        mobile: data?.mobile,
+      };
+
       dispatch(setLoader(true));
       let response: any = await profileEditRequest(isNetConnected, body);
       if (response?.status) {
@@ -63,18 +79,20 @@ const UserProfile = (props: ScreenProps) => {
           response?.user,
         );
         Alert.alert(`${response?.message}`);
-        // props?.navigation.navigate(Routes.Settings.SettingHome);
-        props?.navigation.goBack();
+        // props?.navigation.goBack();
+        dispatch(userData(response?.user));
+        await props?.navigation.replace(Routes.Settings.SettingHome);
       } else {
         Alert.alert(`${response?.message}`);
       }
     } catch (e) {
-      console.log('error in updating profile ', e);
+      console.log('Error in updating profile: ', e);
     } finally {
       dispatch(setLoader(false));
     }
   };
 
+  // console.log('userdata==========', userData);
   return (
     <View
       style={[AppStyles.mainContainer, {paddingHorizontal: normalized(10)}]}>
@@ -85,12 +103,41 @@ const UserProfile = (props: ScreenProps) => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <View style={styles.imgContainer}>
-            <Image
-              source={AppImages.Common.placeholderImg}
-              style={styles.profileImg}
-            />
-          </View>
+          <Controller
+            control={control}
+            name="image"
+            render={({field: {value, onChange}}) => (
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    ImagePicker.openPicker({
+                      width: 300,
+                      height: 400,
+                      cropping: true,
+                    }).then(image => {
+                      const selectedImg = handleImageSelection(image);
+                      onChange(selectedImg); // Pass the image to the Controller
+                    });
+                  }}>
+                  <View style={styles.imgContainer}>
+                    <Image
+                      source={
+                        img ? {uri: img?.path} : AppImages.Common.placeholderImg
+                      }
+                      style={styles.profileImg}
+                    />
+                  </View>
+                  <View style={styles.editIcon}>
+                    <Image
+                      source={AppImages.Common.editIcon}
+                      style={styles.img1}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </>
+            )}
+          />
+
           <Text style={styles.title}>{userData?.name}</Text>
           <Text style={[styles.txt, {textAlign: 'center'}]}>
             {' '}
@@ -131,6 +178,7 @@ const UserProfile = (props: ScreenProps) => {
                       placeholder="mobile"
                       value={value}
                       leftIcon={AppImages.Common.phoneIcon}
+                      keyboardType="numeric"
                     />
                   </>
                 )}
@@ -149,6 +197,36 @@ const UserProfile = (props: ScreenProps) => {
               </>
               <Controller
                 control={control}
+                name="address"
+                render={({field: {value, onChange}}) => (
+                  <>
+                    <Text style={styles.txt}>Address</Text>
+                    <RoundInput
+                      onChangeText={t => onChange(t)}
+                      placeholder="Address"
+                      value={value}
+                      leftIcon={AppImages.Settings.AddressIcon}
+                    />
+                  </>
+                )}
+              />
+              <Controller
+                control={control}
+                name="city"
+                render={({field: {value, onChange}}) => (
+                  <>
+                    <Text style={styles.txt}>City</Text>
+                    <RoundInput
+                      onChangeText={t => onChange(t)}
+                      placeholder="city"
+                      value={value}
+                      leftIcon={AppImages.Settings.CityIcon}
+                    />
+                  </>
+                )}
+              />
+              <Controller
+                control={control}
                 name="whatsapp"
                 render={({field: {value, onChange}}) => (
                   <>
@@ -158,6 +236,7 @@ const UserProfile = (props: ScreenProps) => {
                       placeholder="whatsapp"
                       value={value}
                       leftIcon={AppImages.Home.whatsApp}
+                      keyboardType="numeric"
                     />
                   </>
                 )}
@@ -185,31 +264,34 @@ const styles = StyleSheet.create({
     height: hv(170),
   },
   header: {
-    height: hv(150),
-    marginBottom: hv(10),
+    height: hv(180),
+    paddingTop: hv(10),
+    backgroundColor: AppColors.bgColor,
+    flex: 1,
   },
   imgContainer: {
-    width: normalized(90),
-    height: hv(90),
+    width: normalized(100),
+    height: hv(100),
     backgroundColor: AppColors.grey.greyLighter,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: normalized(40),
+    borderRadius: normalized(47),
     borderWidth: 3,
     borderColor: AppColors.white.white,
   },
   profileImg: {
-    width: normalized(50),
-    height: hv(50),
-    resizeMode: 'contain',
+    width: normalized(95),
+    height: hv(95),
+    resizeMode: 'cover',
+    borderRadius: normalized(47),
   },
   title: {
     color: AppColors.black.black,
     fontSize: normalized(16),
     fontWeight: '700',
     alignSelf: 'center',
-    marginVertical: hv(5),
+    marginTop: hv(10),
   },
   imgCard: {
     resizeMode: 'contain',
@@ -286,5 +368,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: normalized(20),
     height: hv(20),
+  },
+  img1: {
+    resizeMode: 'contain',
+    width: normalized(20),
+    height: hv(20),
+  },
+  editIcon: {
+    alignSelf: 'center',
+    marginTop: hv(-40),
+    marginBottom: hv(10),
+    marginLeft: normalized(90),
   },
 });

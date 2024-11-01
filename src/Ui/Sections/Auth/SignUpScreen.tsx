@@ -28,7 +28,7 @@ import {setLoader, setUserData} from '../../../Redux/reducers/AppReducer';
 import CommonDataManager from '../../../Utils/CommonManager';
 
 const SignUpScreen = (props: ScreenProps) => {
-  const {isLoaderStart, isNetConnected} = useSelector(
+  const {isLoaderStart, isNetConnected, userData} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
   const dispatch = useDispatch();
@@ -63,7 +63,6 @@ const SignUpScreen = (props: ScreenProps) => {
         await CommonDataManager.getSharedInstance().saveUserToken(
           response?.token,
         );
-
         dispatch(setUserData(response.data));
       } else {
         Alert.alert(`${response?.message}`);

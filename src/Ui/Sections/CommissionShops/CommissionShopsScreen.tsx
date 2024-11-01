@@ -78,22 +78,26 @@ const CommissionShopsScreen = (props: ScreenProps) => {
                     item: item,
                   });
                 }}>
-                <View style={styles.iconContainer}>
-                  <Image
-                    source={
-                      (item?.images ?? []).length > 0
-                        ? item?.images
-                        : AppImages.Common.placeholderImg
-                    }
-                    style={styles.bgImg}
-                  />
+                <View style={styles.headerContainer}>
+                  <View style={styles.avatarImgCon}>
+                    <Image
+                      source={
+                        item?.avatar
+                          ? {uri: item?.avatar}
+                          : AppImages.Common.placeholderImg
+                      }
+                      style={styles.avatarImg}
+                    />
+                  </View>
                   <Text style={[styles.txt, {marginLeft: normalized(10)}]}>
                     {item?.shop_name}
                   </Text>
-                  <Image
-                    source={AppImages.Common.menuIcon}
-                    style={styles.menuIcon}
-                  />
+                  {/* <View style={{}}>
+                    <Image
+                      source={item?.avatar ?? AppImages.Common.menuIcon}
+                      style={styles.menuIcon}
+                    />
+                  </View> */}
                 </View>
                 <View
                   style={{
@@ -188,7 +192,6 @@ const styles = StyleSheet.create({
     marginHorizontal: normalized(10),
     marginVertical: hv(5),
     padding: normalized(10),
-    // paddingBottom: hv(10),
     flex: 1,
   },
   cardContainer: {
@@ -207,23 +210,31 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: hv(12),
   },
-  iconContainer: {
+  headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  bgImg: {
+  avatarImgCon: {
+    width: normalized(70),
+    height: hv(70),
+    borderRadius: normalized(35),
+    borderWidth: 1.5,
+    borderColor: AppColors.white.whiteOp,
+  },
+  avatarImg: {
     resizeMode: 'contain',
-    width: normalized(60),
-    height: hv(60),
+    width: normalized(70),
+    height: hv(70),
     borderRadius: normalized(35),
   },
-  menuIcon: {
-    width: normalized(20),
-    height: hv(20),
-    resizeMode: 'contain',
-    position: 'absolute',
-    right: normalized(5),
-  },
+  // menuIcon: {
+  //   width: normalized(20),
+  //   height: hv(20),
+  //   resizeMode: 'contain',
+  //   position: 'absolute',
+  //   right: normalized(5),
+  //   backgroundColor: 'green',
+  // },
   btm: {
     flexDirection: 'row',
     marginHorizontal: normalized(10),

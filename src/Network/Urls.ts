@@ -42,6 +42,10 @@ export const CREATE_MY_SHOP = BASE_URL + 'user/create-shop';
 //list of cities
 export const CITIES_LIST = BASE_URL + 'user/all-cities';
 
+//Live Chat
+export const SEND_MSG = BASE_URL + 'user/send-message';
+export const RECEIVE_MSG = BASE_URL + 'user/get-messages';
+
 //Edit profile
 export const EDIT_PROFILE = BASE_URL + 'user/update-profile';
 

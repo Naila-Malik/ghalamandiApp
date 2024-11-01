@@ -10,6 +10,7 @@ import {
   AppColors,
   AppImages,
   formFieldsHeight,
+  hv,
   normalized,
 } from '../../../Utils/AppConstants';
 import {AppStyles} from '../../../Utils/AppStyles';
@@ -52,7 +53,12 @@ const CustomDropdown = (props: Props) => {
                 onPress={() => oneSelectItem(val)}
                 style={styles.optionName}
                 key={i}>
-                <Text style={{color: AppColors.grey.greyLighterLvl2}}>
+                <Text
+                  style={{
+                    color: AppColors.grey.greyLighterLvl2,
+                    lineHeight: hv(28),
+                    fontSize: 16,
+                  }}>
                   {val?.name}
                 </Text>
               </TouchableWithoutFeedback>
@@ -90,5 +96,6 @@ const styles = StyleSheet.create({
     margin: 5,
     padding: 10,
     borderRadius: 4,
+    marginVertical: hv(5),
   },
 });

@@ -2,6 +2,7 @@ import {
   Alert,
   Image,
   ImageBackground,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,15 +29,20 @@ import {MyNewShopRequest} from '../../../Network/Services/CommissionShops';
 import {setLoader} from '../../../Redux/reducers/AppReducer';
 import AppLoader from '../../Components/Loader/AppLoader';
 import {Routes} from '../../../Utils/Routes';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const MyShopScreen = (props: ScreenProps) => {
-  const [bgImage, setBgImage] = useState();
-  const [iconImage, setIconImage] = useState();
+  const [bgImage, setBgImage] = useState<string | null>(null);
+  const [iconImage, setIconImage] = useState<string | null>(null);
   const {name, id} = props?.route?.params;
   const {isNetConnected, isLoaderStart} = useSelector(
     (state: AppRootStore) => state.AppReducer,
   );
   const dispatch = useDispatch();
+  const handleImageSelection = (image: any) => {
+    // setImg(image);
+    return image;
+  };
 
   const {
     control,
@@ -54,32 +60,42 @@ const MyShopScreen = (props: ScreenProps) => {
     },
   });
 
+  const convertToBase64 = async (imagePath: string) => {
+    return await RNFetchBlob.fs.readFile(imagePath, 'base64');
+  };
+
   const onSubmit: SubmitHandler<any> = async (data: any) => {
-    let body = {
-      bg_image: data?.bgImage,
-      avatar: data?.iconImage,
-      shop_name: data?.name,
-      shop_address: data?.address,
-      about: data?.about,
-      shop_no: data?.shopNo,
-      mobile_no: data?.PNumber,
-      city: id,
-      buy_crops: ['6', '7'],
-      whatsapp_no: data?.PNumber,
-    };
     try {
-      // console.log('body================', body);
       dispatch(setLoader(true));
-      let response: any = await MyNewShopRequest(isNetConnected, body);
-      // console.log('respose-----------', response);
+      const bgImageBase64 = bgImage ? await convertToBase64(bgImage) : null;
+      const iconImageBase64 = iconImage
+        ? await convertToBase64(iconImage)
+        : null;
+
+      const body = {
+        bg_image: bgImageBase64,
+        avatar: iconImageBase64,
+        shop_name: data?.name,
+        shop_address: data?.address,
+        about: data?.about,
+        shop_no: data?.shopNo,
+        mobile_no: data?.PNumber,
+        city: id,
+        buy_crops: ['6', '7'],
+        whatsapp_no: data?.PNumber,
+      };
+
+      // console.log('Data before sending:', body);
+      const response: any = await MyNewShopRequest(isNetConnected, body);
+      // console.log('response================', response);
       if (response?.success) {
         Alert.alert(`${response?.message}`);
         props?.navigation.navigate(Routes.home.homePage);
       } else {
         Alert.alert(`${response?.message}`);
       }
-    } catch (e) {
-      console.log('error in create shop ', e);
+    } catch (error) {
+      console.log('Error in creating shop:', error);
     } finally {
       dispatch(setLoader(false));
     }
@@ -96,40 +112,40 @@ const MyShopScreen = (props: ScreenProps) => {
       <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
           <TouchableOpacity
-            style={{
-              alignItems: 'center',
-            }}
+            style={{alignItems: 'center'}}
             onPress={() => {
               ImagePicker.openPicker({
-                width: 300,
-                height: 400,
+                width: 400,
+                height: 300,
                 cropping: true,
               }).then(image => {
-                console.log(image);
-                setBgImage(image?.path);
+                setBgImage(image?.path); // Set background image path
               });
             }}>
             <ImageBackground
-              source={AppImages.Common.uploadImageIcon}
+              source={
+                bgImage ? {uri: bgImage} : AppImages.Common.uploadImageIcon
+              }
               style={styles.imgCard}>
-              <Text style={styles.txt1}>Upload Image</Text>
+              <Text style={styles.txt1}>Upload Background Image</Text>
             </ImageBackground>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.LogoContainer}
             onPress={() => {
               ImagePicker.openPicker({
-                width: 300,
-                height: 400,
+                width: 250,
+                height: 250,
                 cropping: true,
               }).then(image => {
-                console.log(image);
-                setIconImage(image?.path);
+                setIconImage(image?.path); // Set icon image path
               });
             }}>
             <Image
-              source={AppImages.Common.iconUpload}
-              style={styles.imgCard}
+              source={
+                iconImage ? {uri: iconImage} : AppImages.Common.iconUpload
+              }
+              style={styles.imgLogo}
             />
           </TouchableOpacity>
         </View>
@@ -138,7 +154,7 @@ const MyShopScreen = (props: ScreenProps) => {
             <AppLoader visible={isLoaderStart} />
           </View>
         ) : (
-          <>
+          <KeyboardAvoidingView>
             <Controller
               control={control}
               name="name"
@@ -210,6 +226,7 @@ const MyShopScreen = (props: ScreenProps) => {
                     placeholder="Mobile #"
                     value={value}
                     leftIcon={AppImages.Common.phoneIcon}
+                    keyboardType="numeric"
                   />
                 </>
               )}
@@ -220,7 +237,7 @@ const MyShopScreen = (props: ScreenProps) => {
               containerStyle={styles.Btn}
               titleStyle={{color: AppColors.white.white}}
             />
-          </>
+          </KeyboardAvoidingView>
         )}
       </ScrollView>
     </View>
@@ -241,16 +258,12 @@ const styles = StyleSheet.create({
     height: hv(170),
     alignSelf: 'center',
     marginVertical: hv(10),
-    opacity: normalized(0.5),
+    // opacity: normalized(0.5),
   },
   imgLogo: {
     resizeMode: 'contain',
-    width: normalized(70),
-    height: hv(70),
-    zIndex: 10,
-    marginTop: hv(-50),
-    marginBottom: hv(10),
-    marginHorizontal: normalized(10),
+    width: normalized(90),
+    height: hv(90),
     borderRadius: normalized(50),
   },
   Btn: {
@@ -260,14 +273,15 @@ const styles = StyleSheet.create({
     marginVertical: hv(10),
   },
   LogoContainer: {
-    width: normalized(80),
-    height: hv(80),
+    width: normalized(90),
+    height: hv(90),
     marginTop: hv(-150),
     marginHorizontal: normalized(10),
     borderRadius: normalized(50),
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
+    zIndex: 10,
     borderColor: AppColors.grey.greyLighter,
   },
   txt1: {

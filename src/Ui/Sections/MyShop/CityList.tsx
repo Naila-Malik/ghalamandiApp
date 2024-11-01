@@ -25,7 +25,7 @@ const CityList = (props: ScreenProps) => {
   );
 
   const fetchCities = async () => {
-    dispatch(setLoader(true));
+    // dispatch(setLoader(true));
     try {
       const citiesData = await CitiesList();
       if (citiesData) {
@@ -34,7 +34,7 @@ const CityList = (props: ScreenProps) => {
     } catch (error) {
       console.error('Error fetching cities:', error);
     } finally {
-      dispatch(setLoader(false));
+      // dispatch(setLoader(false));
     }
   };
 

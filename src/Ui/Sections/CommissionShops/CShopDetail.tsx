@@ -21,6 +21,7 @@ import RoundButton from '../../Components/Button/RoundButton';
 
 const CShopDetail = (props: ScreenProps) => {
   const item = props?.route?.params?.item;
+  // console.log('details================', item);
   return (
     <View style={[AppStyles.MainStyle, {padding: normalized(10)}]}>
       <AppHeader
@@ -33,21 +34,21 @@ const CShopDetail = (props: ScreenProps) => {
           <View style={styles.imgCradCon}>
             <Image
               source={
-                (item?.bg_image ?? []).length > 0
-                  ? item?.bg_image
+                item?.bg_image
+                  ? {uri: item?.bg_image}
                   : AppImages.Common.placeholderImg
               }
-              resizeMode="contain"
+              style={styles.bgImg}
             />
           </View>
           <View style={styles.imgLogoCOn}>
             <Image
               source={
-                (item?.avatar ?? []).length > 0
-                  ? item?.avatar
+                item?.avatar
+                  ? {uri: item?.avatar}
                   : AppImages.Common.placeholderImg
               }
-              resizeMode="contain"
+              style={styles.avatarImg}
             />
           </View>
           <Text style={styles.txt}>{item?.nameShop}</Text>
@@ -159,17 +160,27 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: AppColors.grey.greyLighter,
   },
+  bgImg: {
+    resizeMode: 'contain',
+    width: '100%',
+    height: hv(170),
+  },
   imgLogoCOn: {
-    backgroundColor: 'white',
     borderWidth: 1.5,
-    borderColor: AppColors.grey.greyLighter,
-    width: normalized(90),
-    height: hv(90),
+    borderColor: AppColors.white.whiteOp,
+    width: normalized(70),
+    height: hv(70),
     zIndex: 10,
     marginTop: hv(-50),
     marginBottom: hv(10),
     marginHorizontal: normalized(10),
     borderRadius: normalized(50),
+  },
+  avatarImg: {
+    resizeMode: 'contain',
+    width: normalized(70),
+    height: hv(70),
+    borderRadius: normalized(35),
   },
   TxtBG: {
     marginTop: hv(10),

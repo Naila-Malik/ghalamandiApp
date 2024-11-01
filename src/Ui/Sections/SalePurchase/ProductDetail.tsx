@@ -1,5 +1,5 @@
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   AppColors,
   AppImages,
@@ -18,11 +18,13 @@ import {addCropRequest} from '../../../Network/Services/HomeApis';
 import {setIsAlertShow, setLoader} from '../../../Redux/reducers/AppReducer';
 import {AppRootStore} from '../../../Redux/store/AppStore';
 import AppLoader from '../../Components/Loader/AppLoader';
+import Carousel from 'react-native-snap-carousel';
 
 const ProductDetail = (props: ScreenProps) => {
   let item = props?.route?.params?.item;
   const [amount, setAmount] = useState<number>();
   const [showModal, setShowModal] = useState(false);
+  const carouselRef = useRef();
   const dispatch = useDispatch();
   const {isNetConnected, isLoaderStart} = useSelector(
     (state: AppRootStore) => state.AppReducer,
@@ -58,6 +60,10 @@ const ProductDetail = (props: ScreenProps) => {
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
+  const RenderItem = React.memo(({item}: any) => {
+    return <Image source={{uri: item?.image}} style={styles.imgCard} />;
+  });
+
   return (
     <View style={AppStyles.MainStyle}>
       <AppHeader
@@ -68,14 +74,34 @@ const ProductDetail = (props: ScreenProps) => {
       <View style={{padding: normalized(10), flex: 1}}>
         <View style={styles.card}>
           <View style={styles.imgBG}>
-            <Image
-              source={
-                (item?.images ?? []).length > 0
-                  ? item?.images
-                  : AppImages.Common.placeholderImg
-              }
-              style={styles.imgCard}
-            />
+            {item?.images.length > 0 ? (
+              <View
+                style={{
+                  width: normalized(150),
+                  height: hv(100),
+                }}>
+                <Carousel
+                  ref={() => carouselRef}
+                  // keyExtractor={(imageItem: any) =>
+                  //   `@${imageItem.index.toString()}`
+                  // }
+                  layout={'default'}
+                  data={item?.images}
+                  renderItem={({item}: any) => <RenderItem item={item} />}
+                  sliderWidth={normalized(150)}
+                  itemWidth={normalized(150)}
+                  autoplay={true}
+                  autoplayDelay={500}
+                  autoplayInterval={3000}
+                  loop={true}
+                />
+              </View>
+            ) : (
+              <Image
+                source={AppImages.Common.placeholderImg}
+                style={styles.imgCard}
+              />
+            )}
           </View>
           <View style={styles.TxtBG}>
             <View style={styles.TxtBox}>
